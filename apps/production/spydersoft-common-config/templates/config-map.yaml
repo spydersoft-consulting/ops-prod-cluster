@@ -13,8 +13,6 @@ metadata:
 data:
   AllowedOrigins__0: https://*.mattgerega.com
   Identity__AuthorityUrl: https://auth.mattgerega.com
-  Logging__LogLevel__Default: Debug
-  Logging__LogLevel__Microsoft: Debug
-  Logging__LogLevel__System: Debug
+  Logging__LogLevel__Default: Warning
   Serilog__WriteTo__Elastic__Args__indexFormat: log-production-{0:yyyy.MM}
   Serilog__WriteTo__Elastic__Args__nodeUris: http://elastic.mattgerega.net/
