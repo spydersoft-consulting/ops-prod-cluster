@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: external-nettools
+  name: external-apps
   labels:
     spydersoft.io/environment: production
     spydersoft.io/category: app-set
@@ -11,13 +11,13 @@ spec:
       repoURL: https://bitbucket.org/spydersoftteam/ops-prod-cluster
       revision: HEAD
       directories:
-      - path: external/nettools/*
+      - path: external/*
   template:
     metadata:
       name: '{{path.basename}}'
       labels:
         spydersoft.io/environment: production
-        spydersoft.io/category: nettool
+        spydersoft.io/category: '{{path[1]}}'
     spec:
       project: external-apps
       source:
@@ -30,7 +30,7 @@ spec:
         targetRevision: main
       destination:
         server: https://192.168.1.46:6443
-        namespace: 'nettools'
+        namespace: '{{path[1]}}'
       syncPolicy:
         automated: 
           prune: true 
