@@ -1,0 +1,35 @@
+image:
+  repository: proget.inedo.com/productimages/inedo/proget
+  pullPolicy: IfNotPresent
+
+strategy:
+  type: Recreate
+
+envFrom:
+  - secretRef:
+      name: proget-secrets
+
+service:
+  port:
+    port: 80
+
+ingress:
+  enabled: true
+  annotations: 
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  labels: 
+    ingressClassName: "nginx"
+  hosts:
+    - host: proget.mattgerega.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+persistence:
+  packages:
+    enabled: true
+    existingClaim: progetdata-claim
+    emptyDir:
+      enabled: false
+    mountPath: /var/proget/packages
