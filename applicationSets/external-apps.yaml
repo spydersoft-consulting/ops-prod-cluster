@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: external-nettools
+  labels:
+    environment: production
+    category: nettool
+spec:
+  generators:
+  - git:
+      repoURL: https://bitbucket.org/spydersoftteam/ops-prod-cluster
+      revision: HEAD
+      directories:
+      - path: external/nettools/*
+  template:
+    metadata:
+      name: '{{path.basename}}'
+      labels:
+        environment: production
+        category: nettool
+    spec:
+      project: external-apps
+      source:
+        repoURL: https://bitbucket.org/spydersoftteam/ops-prod-cluster
+        targetRevision: main
+        path: '{{ path }}'
+        directory:
+          recurse: true
+      destination:
+        server: https://192.168.1.46:6443
+        namespace: 'nettools'
+      syncPolicy:
+        automated: 
+          prune: true 
+          selfHeal: true
+        syncOptions:   
+        - CreateNamespace=true
