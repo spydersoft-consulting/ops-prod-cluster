@@ -11,7 +11,7 @@ spec:
       repoURL: https://bitbucket.org/spydersoftteam/ops-prod-cluster
       revision: HEAD
       directories:
-      - path: external/*
+      - path: external/**/*
   template:
     metadata:
       name: '{{path.basename}}'
