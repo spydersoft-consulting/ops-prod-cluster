@@ -1,0 +1,74 @@
+image:
+  tag: v6.5.55
+env:
+  TZ: "America/New_York"
+
+service:     
+  controller:
+    enabled: true
+    primary: false
+    type: NodePort
+    ports:
+      npcontroller:
+        enabled: true
+        port: 8080
+        protocol: TCP
+
+  stun:
+    enabled: true
+    primary: false
+    type: NodePort
+    ports:
+      stun:
+        enabled: true
+        port: 3478
+        protocol: UDP
+  
+  syslog:
+    enabled: true
+    primary: false
+    type: NodePort
+    ports:
+      syslog:
+        enabled: true
+        port: 5514
+        protocol: UDP
+  
+  discovery:
+    enabled: true
+    primary: false
+    type: NodePort
+    ports:
+      discovery:
+        enabled: true
+        port: 10001
+        protocol: UDP
+
+ingress:
+  main:
+    enabled: true
+    hosts:
+      - host: unifi.mattgerega.com
+        paths:
+        - path: /
+          pathType: Prefix
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      nginx.ingress.kubernetes.io/proxy-body-size: 100M
+
+
+persistence:
+  data:
+    enabled: true
+    type: pvc
+    storageClass: nfs-client
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    retain: true
+
+customCert:
+  enabled: true
+  isChain: true
+  # If you want to store certificate and its key as a Kubernetes tls secret
+  # you can pass the name of that secret using certSecret variable
+  certSecret: mattgerega.com

@@ -1,0 +1,6 @@
+dependencies:
+- name: unifi
+  repository: https://k8s-at-home.com/charts/
+  version: 4.6.1
+digest: sha256:ea4de19420c27966894ab6878ee286d7dbf3958507db363c244f63faa7059a65
+generated: "2022-03-26T20:36:31.0233792-04:00"
