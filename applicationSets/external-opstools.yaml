@@ -4,7 +4,7 @@ metadata:
   name: external-opstools
   labels:
     spydersoft.io/environment: production
-    spydersoft.io/category: nettool
+    spydersoft.io/category: app-set
 spec:
   generators:
   - git:
@@ -17,7 +17,7 @@ spec:
       name: '{{path.basename}}'
       labels:
         spydersoft.io/environment: production
-        spydersoft.io/category: nettool
+        spydersoft.io/category: opstool
     spec:
       project: external-apps
       source:

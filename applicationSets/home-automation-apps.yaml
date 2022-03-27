@@ -4,7 +4,7 @@ metadata:
   name: home-automation-apps-prod
   labels:
     spydersoft.io/environment: production
-    spydersoft.io/category: app
+    spydersoft.io/category: app-set
 spec:
   generators:
   - git:
