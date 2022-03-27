@@ -1,6 +1,5 @@
 wordpress:
   wordpressUsername: admin
-  wordpressPassword: 33TzN6I0okx2zzYAKvjf
   wordpressScheme: https
   allowEmptyPassword: false
 
