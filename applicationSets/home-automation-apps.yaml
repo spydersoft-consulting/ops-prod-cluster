@@ -3,8 +3,8 @@ kind: ApplicationSet
 metadata:
   name: home-automation-apps-prod
   labels:
-    environment: production
-    category: app
+    spydersoft.io/environment: production
+    spydersoft.io/category: app
 spec:
   generators:
   - git:
@@ -16,8 +16,8 @@ spec:
     metadata:
       name: '{{path.basename}}-{{path[2]}}'
       labels:
-        environment: production
-        category: app
+        spydersoft.io/environment: production
+        spydersoft.io/category: app
     spec:
       project: home-automation-apps
       source:
