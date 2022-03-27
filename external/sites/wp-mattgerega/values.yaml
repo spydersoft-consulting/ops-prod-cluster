@@ -4,7 +4,7 @@ wordpress:
   wordpressScheme: https
   allowEmptyPassword: false
 
-  existingSecret: "wp-secrets"
+  existingSecret: "wp-mg-secrets"
 
   livenessProbe:
     httpGet:
@@ -28,6 +28,8 @@ wordpress:
     storageClass: "nfs-client"
 
   mariadb:
+    auth:
+      existingSecret: "wp-mg-db-secrets"
     primary:
       persistence:
         storageClass: "nfs-client"
