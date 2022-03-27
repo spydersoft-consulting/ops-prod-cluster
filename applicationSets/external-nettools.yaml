@@ -12,6 +12,8 @@ spec:
       revision: HEAD
       directories:
       - path: external/**/*
+      - path: external/nettools/*
+        exclude: true
   template:
     metadata:
       name: '{{path.basename}}'
