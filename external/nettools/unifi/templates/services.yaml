@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-controller
+  labels:
+    helm.sh/chart: unifi-4.6.1
+    app.kubernetes.io/name: unifi
+    app.kubernetes.io/instance: unifi
+    app.kubernetes.io/version: "v6.5.55"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    targetPort: npcontroller
+    protocol: TCP
+    name: npcontroller
+  selector:
+    app.kubernetes.io/name: unifi
+    app.kubernetes.io/instance: unifi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-discovery
+  labels:
+    helm.sh/chart: unifi-4.6.1
+    app.kubernetes.io/name: unifi
+    app.kubernetes.io/instance: unifi
+    app.kubernetes.io/version: "v6.5.55"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+spec:
+  type: NodePort
+  ports:
+  - port: 10001
+    targetPort: discovery
+    protocol: UDP
+    name: discovery
+  selector:
+    app.kubernetes.io/name: unifi
+    app.kubernetes.io/instance: unifi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-stun
+  labels:
+    helm.sh/chart: unifi-4.6.1
+    app.kubernetes.io/name: unifi
+    app.kubernetes.io/instance: unifi
+    app.kubernetes.io/version: "v6.5.55"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+spec:
+  type: NodePort
+  ports:
+  - port: 3478
+    targetPort: stun
+    protocol: UDP
+    name: stun
+  selector:
+    app.kubernetes.io/name: unifi
+    app.kubernetes.io/instance: unifi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-syslog
+  labels:
+    helm.sh/chart: unifi-4.6.1
+    app.kubernetes.io/name: unifi
+    app.kubernetes.io/instance: unifi
+    app.kubernetes.io/version: "v6.5.55"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+spec:
+  type: NodePort
+  ports:
+  - port: 5514
+    targetPort: syslog
+    protocol: UDP
+    name: syslog
+  selector:
+    app.kubernetes.io/name: unifi
+    app.kubernetes.io/instance: unifi
+---

@@ -5,7 +5,14 @@ unifi:
     TZ: "America/New_York"
 
   # service:
-  #   main:     
+  #   main:
+  #     enabled: true
+  #     primary: true
+  #     ports:
+  #     http:
+  #       port: 8443
+  #       protocol: HTTPS
+          
   #   controller:
   #     enabled: true
   #     primary: false
@@ -44,7 +51,7 @@ unifi:
   #       discovery:
   #         enabled: true
   #         port: 10001
-  #        protocol: UDP
+  #         protocol: UDP
 
   ingress:
     main:
