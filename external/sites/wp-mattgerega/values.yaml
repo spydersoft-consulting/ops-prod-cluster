@@ -15,7 +15,9 @@ wordpress:
       httpHeaders:
         - name: X-Forwarded-Proto
           value: https
-
+  service:
+    type: ClusterIP
+    
   ingress:
     enabled: true
     hostname: www.mattgerega.com
