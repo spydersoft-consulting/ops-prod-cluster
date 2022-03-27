@@ -1,0 +1,33 @@
+wordpress:
+  wordpressUsername: admin
+  wordpressPassword: 33TzN6I0okx2zzYAKvjf
+  wordpressScheme: https
+  allowEmptyPassword: false
+
+  existingSecret: "wp-secrets"
+
+  livenessProbe:
+    httpGet:
+      httpHeaders:
+        - name: X-Forwarded-Proto
+          value: https
+  readinessProbe:
+    httpGet:
+      httpHeaders:
+        - name: X-Forwarded-Proto
+          value: https
+
+  ingress:
+    enabled: true
+    hostname: www.mattgerega.com
+    annotations:
+      { nginx.ingress.kubernetes.io/proxy-body-size: 50M }
+
+  persistence:
+    enabled: true
+    storageClass: "nfs-client"
+
+  mariadb:
+    primary:
+      persistence:
+        storageClass: "nfs-client"
