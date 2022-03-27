@@ -29,6 +29,8 @@ wordpress:
 
   mariadb:
     auth:
+      rootPassword : 't'
+      password: 'u'
       existingSecret: "wp-mg-db-secrets"
     primary:
       persistence:
