@@ -10,7 +10,7 @@ unifi:
       primary: false
       type: NodePort
       ports:
-        npcontroller:
+        npcontroller-tcp:
           enabled: true
           port: 8080
           protocol: TCP
@@ -20,7 +20,7 @@ unifi:
       primary: false
       type: NodePort
       ports:
-        stun:
+        stun-udp:
           enabled: true
           port: 3478
           protocol: UDP
@@ -30,7 +30,7 @@ unifi:
       primary: false
       type: NodePort
       ports:
-        syslog:
+        syslog-udp:
           enabled: true
           port: 5514
           protocol: UDP
@@ -40,7 +40,7 @@ unifi:
       primary: false
       type: NodePort
       ports:
-        discovery:
+        discovery-udp:
           enabled: true
           port: 10001
           protocol: UDP
