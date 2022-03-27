@@ -4,46 +4,47 @@ unifi:
   env:
     TZ: "America/New_York"
 
-  service:     
-    controller:
-      enabled: true
-      primary: false
-      type: NodePort
-      ports:
-        npcontroller-tcp:
-          enabled: true
-          port: 8080
-          protocol: TCP
+  # service:
+  #   main:     
+  #   controller:
+  #     enabled: true
+  #     primary: false
+  #     type: NodePort
+  #     ports:
+  #       npcontroller:
+  #         enabled: true
+  #         port: 8080
+  #         protocol: TCP
 
-    stun:
-      enabled: true
-      primary: false
-      type: NodePort
-      ports:
-        stun-udp:
-          enabled: true
-          port: 3478
-          protocol: UDP
+  #   stun:
+  #     enabled: true
+  #     primary: false
+  #     type: NodePort
+  #     ports:
+  #       stun:
+  #         enabled: true
+  #         port: 3478
+  #         protocol: UDP
     
-    syslog:
-      enabled: true
-      primary: false
-      type: NodePort
-      ports:
-        syslog-udp:
-          enabled: true
-          port: 5514
-          protocol: UDP
+  #   syslog:
+  #     enabled: true
+  #     primary: false
+  #     type: NodePort
+  #     ports:
+  #       syslog:
+  #         enabled: true
+  #         port: 5514
+  #         protocol: UDP
     
-    discovery:
-      enabled: true
-      primary: false
-      type: NodePort
-      ports:
-        discovery-udp:
-          enabled: true
-          port: 10001
-          protocol: UDP
+  #   discovery:
+  #     enabled: true
+  #     primary: false
+  #     type: NodePort
+  #     ports:
+  #       discovery:
+  #         enabled: true
+  #         port: 10001
+  #        protocol: UDP
 
   ingress:
     main:
