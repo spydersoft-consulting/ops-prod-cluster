@@ -8,7 +8,7 @@ metadata:
 spec:
   generators:
   - git:
-      repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
+      repoURL: https://bitbucket.org/spydersoftteam/ops-prod-cluster
       revision: HEAD
       directories:
       - path: apps/identity/production/*
@@ -21,13 +21,13 @@ spec:
     spec:
       project: identity-apps
       source:
-        repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
+        repoURL: https://bitbucket.org/spydersoftteam/ops-prod-cluster
         targetRevision: main
         path: '{{ path }}'
         directory:
           recurse: true
       destination:
-        server: https://192.168.1.43:6443
+        server: https://192.168.1.46:6443
         namespace: '{{ path[2] }}'
       syncPolicy:
         automated: 
