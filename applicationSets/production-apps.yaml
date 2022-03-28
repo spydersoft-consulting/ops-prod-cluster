@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: home-automation-apps-prod
+  name: production-apps
   labels:
     spydersoft.io/environment: production
     spydersoft.io/category: app-set
@@ -11,7 +11,7 @@ spec:
       repoURL: https://bitbucket.org/spydersoftteam/ops-prod-cluster
       revision: HEAD
       directories:
-      - path: apps/home-automation/production/*
+      - path: apps/**/production/*
   template:
     metadata:
       name: '{{path.basename}}-{{path[2]}}'
@@ -19,7 +19,7 @@ spec:
         spydersoft.io/environment: production
         spydersoft.io/category: app
     spec:
-      project: home-automation-apps
+      project: '{{ path[1] }}-apps'
       source:
         repoURL: https://bitbucket.org/spydersoftteam/ops-prod-cluster
         targetRevision: main

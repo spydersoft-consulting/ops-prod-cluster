@@ -9,13 +9,10 @@ unifi:
       ports:
         controller:
           enabled: false
-        
         stun:
           enabled: false
-        
         syslog:
           enabled: false
-
         discovery:
           enabled: false
 
