@@ -4,54 +4,60 @@ unifi:
   env:
     TZ: "America/New_York"
 
-  # service:
-  #   main:
-  #     enabled: true
-  #     primary: true
-  #     ports:
-  #     http:
-  #       port: 8443
-  #       protocol: HTTPS
-          
-  #   controller:
-  #     enabled: true
-  #     primary: false
-  #     type: NodePort
-  #     ports:
-  #       npcontroller:
-  #         enabled: true
-  #         port: 8080
-  #         protocol: TCP
+  service:
+    main:
+      ports:
+        controller:
+          enabled: false
+        
+        stun:
+          enabled: false
+        
+        syslog:
+          enabled: false
 
-  #   stun:
-  #     enabled: true
-  #     primary: false
-  #     type: NodePort
-  #     ports:
-  #       stun:
-  #         enabled: true
-  #         port: 3478
-  #         protocol: UDP
+        discovery:
+          enabled: false
+
+    controller:
+      enabled: true
+      primary: false
+      type: NodePort
+      ports:
+        npcontroller:
+          enabled: true
+          port: 8080
+          protocol: TCP
+
+    stun:
+      enabled: true
+      primary: false
+      type: NodePort
+      ports:
+        stun:
+          enabled: true
+          port: 3478
+          protocol: UDP
     
-  #   syslog:
-  #     enabled: true
-  #     primary: false
-  #     type: NodePort
-  #     ports:
-  #       syslog:
-  #         enabled: true
-  #         port: 5514
-  #         protocol: UDP
+    syslog:
+      enabled: true
+      primary: false
+      type: NodePort
+      ports:
+        syslog:
+          enabled: true
+          port: 5514
+          protocol: UDP
     
-  #   discovery:
-  #     enabled: true
-  #     primary: false
-  #     type: NodePort
-  #     ports:
-  #       discovery:
-  #         enabled: true
-  #         port: 10001
-  #         protocol: UDP
+    discovery:
+      enabled: true
+      primary: false
+      type: NodePort
+      ports:
+        discovery:
+          enabled: true
+          port: 10001
+          protocol: UDP
 
   ingress:
     main:
