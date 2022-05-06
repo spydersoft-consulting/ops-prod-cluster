@@ -28,13 +28,6 @@ wordpress:
     enabled: true
     storageClass: "nfs-client"
 
-  autoscaling:
-    enabled: true
-    minReplicas: 1
-    maxReplicas: 4
-    targetCPU: 75
-    targetMemory: 75
-    
   mariadb:
     auth:
       existingSecret: "wp-mg-dbsecrets"
