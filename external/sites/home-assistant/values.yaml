@@ -1,0 +1,18 @@
+home-assistant:
+  env:
+    TZ: America/New York
+
+  ingress:
+    main:
+      enabled: true
+      annotations:
+        nginx.org/websocket-services: home-assistant
+      hosts:
+        - host: home.mattgerega.com
+          paths:
+            - path: /
+
+  persistence:
+    config:
+      enabled: true
+      storageClass: "nfs-client"
