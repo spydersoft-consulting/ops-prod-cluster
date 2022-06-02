@@ -3,7 +3,7 @@ unifi-poller:
     TZ: "America/New_York"
     UP_UNIFI_DEFAULT_URL: "http://unifi:8433"
   envFrom:
-    secretRef: unifi-poller
+    - secretRef: unifi-poller
 
   metrics:
     enabled: true
