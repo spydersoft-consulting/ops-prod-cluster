@@ -14,8 +14,8 @@ spec:
   - secretKey: UP_UNIFI_DEFAULT_USER
     remoteRef:
       key: secrets-k8/unifi
-      property: name
+      property: poller_name
   - secretKey: UP_UNIFI_DEFAULT_PASS
     remoteRef:
       key: secrets-k8/unifi
-      property: password
+      property: poller_password
