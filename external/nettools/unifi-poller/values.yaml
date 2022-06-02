@@ -1,7 +1,7 @@
 unifi-poller:
   env:
     TZ: "America/New_York"
-    UP_UNIFI_DEFAULT_URL: "http://unifi:8443"
+    UP_UNIFI_DEFAULT_URL: "https://unifi.mattgerega.com"
   envFrom:
   - secretRef:
       name: unifi-poller
