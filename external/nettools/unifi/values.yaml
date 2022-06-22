@@ -1,6 +1,4 @@
 unifi:
-  image:
-    tag: v7.1.65
   env:
     TZ: "America/New_York"
 
