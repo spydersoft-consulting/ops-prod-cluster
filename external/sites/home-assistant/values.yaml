@@ -13,8 +13,8 @@ home-assistant:
           paths:
             - path: /
               pathType: Prefix
-  podAnnotations:
-    linkerd.io/inject: enabled
+  # podAnnotations:
+  #   linkerd.io/inject: enabled
   persistence:
     config:
       enabled: true
