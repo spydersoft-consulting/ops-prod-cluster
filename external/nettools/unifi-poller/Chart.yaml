@@ -5,13 +5,13 @@ type: application
 
 dependencies:
 - name: unifi-poller
-  version: 10.3.3
+  version: 11.1.2
   repository: https://k8s-at-home.com/charts/
 
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 10.3.3
+version: 11.1.2
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
