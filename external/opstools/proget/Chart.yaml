@@ -1,6 +1,6 @@
 type: application
 description: Proget Helm Chart - Server only, no database
-appVersion: ""
+appVersion: "22.0.8"
 version: 0.2.1
 apiVersion: v2
 dependencies:
