@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: external-apps
+  name: prod-external-apps
   labels:
     spydersoft.io/environment: production
     spydersoft.io/category: app-set
@@ -31,9 +31,9 @@ spec:
       destination:
         server: https://cp-prod.gerega.net:6443
         namespace: '{{path[1]}}'
-      # syncPolicy:
+      syncPolicy:
       #   automated: 
       #     prune: true 
       #     selfHeal: true
-      #   syncOptions:   
-      #   - CreateNamespace=true
+        syncOptions:   
+        - CreateNamespace=true
