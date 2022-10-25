@@ -20,6 +20,7 @@ wordpress:
     
   ingress:
     enabled: true
+    ingressClassName: nginx
     hostname: www.mattgerega.com
     annotations:
       { nginx.ingress.kubernetes.io/proxy-body-size: 50M }
