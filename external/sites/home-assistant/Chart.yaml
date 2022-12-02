@@ -6,6 +6,6 @@ dependencies:
 - version: 13.4.2
   name: home-assistant
   repository: https://k8s-at-home.com/charts/
-appVersion: 2022.5.4
+appVersion: 2022.11.5
 
 
