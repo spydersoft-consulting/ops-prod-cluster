@@ -1,6 +1,6 @@
 home-assistant:
   image:
-    tag: 2022.11.5
+    tag: 2022.8.5
   env:
     TZ: America/New York
 
