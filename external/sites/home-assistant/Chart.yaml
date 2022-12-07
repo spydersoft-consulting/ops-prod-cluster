@@ -1,11 +1,12 @@
 type: application
-version: 13.4.2
-apiVersion: v2
-name: home-assistant
+version: 1.2.0
+appVersion: 2022.11.5
+description: Home Assistant Helm Chart - Server only, no database
 dependencies:
-- version: 13.4.2
-  name: home-assistant
-  repository: https://k8s-at-home.com/charts/
-appVersion: 2022.5.4
+- name: common
+  version: 1.2.0
+  repository: https://bjw-s.github.io/helm-charts
+apiVersion: v2
+name: homeassistant
 
 
