@@ -1,23 +1,31 @@
-home-assistant:
-  image:
-    tag: 2022.8.5
-  env:
-    TZ: America/New York
+image:
+  repository: ghcr.io/home-assistant/home-assistant
+  pullPolicy: IfNotPresent
 
-  ingress:
-    main:
-      enabled: true
-      ingressClassName: nginx
-      annotations:
-        nginx.org/websocket-services: home-assistant
-      hosts:
-        - host: home.mattgerega.com
-          paths:
-            - path: /
-              pathType: Prefix
-  # podAnnotations:
-  #   linkerd.io/inject: enabled
-  persistence:
-    config:
-      enabled: true
-      storageClass: "nfs-client"
+env:
+  TZ: America/New York
+strategy:
+  type: Recreate
+
+service:
+  main:
+    ports:
+      http:
+        port: 8123
+
+ingress:
+  main:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      nginx.org/websocket-services: home-assistant
+    hosts:
+      - host: home.mattgerega.com
+        paths:
+          - path: /
+            pathType: Prefix
+
+persistence:
+  config:
+    enabled: true
+    storageClass: "nfs-client"
