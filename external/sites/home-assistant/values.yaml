@@ -30,7 +30,3 @@ persistence:
     enabled: true
     storageClass: "nfs-client"
 
-serviceMonitor:
-  main:
-    enabled: true
-    
