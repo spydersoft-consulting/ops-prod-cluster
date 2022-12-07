@@ -29,3 +29,8 @@ persistence:
   config:
     enabled: true
     storageClass: "nfs-client"
+
+serviceMonitor:
+  main:
+    enabled: true
+    
