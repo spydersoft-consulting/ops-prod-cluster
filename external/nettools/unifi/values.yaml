@@ -1,6 +1,6 @@
 unifi:
   image:
-    tag: "v7.2.95"
+    tag: "v7.3.76"
   env:
     TZ: "America/New_York"
 
