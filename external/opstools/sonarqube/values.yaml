@@ -12,3 +12,7 @@ sonarqube:
   persistence:
     enabled: true
     storageClass: nfs-client
+  postgresql:
+    persistence:
+      storageClass: nfs-client
+      existingSecret: sonarqube-postgres-credentials
