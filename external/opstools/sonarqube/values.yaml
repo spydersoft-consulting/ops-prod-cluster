@@ -1,0 +1,15 @@
+sonarqube:
+  ingress:
+    enabled: true
+    annotations: 
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/proxy-body-size: "500M"
+    ingressClassName: "nginx"
+    hosts:
+      - name: sonarqube.mattgerega.com
+        path: /
+
+  persistence:
+    enabled: true
+    storageClass: nfs-client
