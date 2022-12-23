@@ -15,4 +15,4 @@ sonarqube:
   postgresql:
     persistence:
       storageClass: nfs-client
-      existingSecret: sonarqube-postgres-credentials
+    existingSecret: sonarqube-postgres-credentials
