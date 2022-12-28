@@ -1,6 +1,6 @@
 type: application
 version: 1.2.0
-appVersion: 2022.12.6
+appVersion: 2022.12.8
 description: Home Assistant Helm Chart - Server only, no database
 dependencies:
 - name: common
