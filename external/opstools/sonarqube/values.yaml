@@ -12,7 +12,12 @@ sonarqube:
   persistence:
     enabled: true
     storageClass: nfs-client
+  jdbcOverwrite:
+    enable: true
+    jdbcUrl: "jdbc:sqlserver://sql-prod.gerega.net;databaseName=Sonarqube;encrypt=false"
+    jdbcUsername: sonarqube
+    jdbcSecretName: sonarqube-jdbc-credentials
+    jdbcSecretPasswordKey: jdbc-password
+  
   postgresql:
-    persistence:
-      storageClass: nfs-client
-    existingSecret: sonarqube-postgres-credentials
+    enabled: false
