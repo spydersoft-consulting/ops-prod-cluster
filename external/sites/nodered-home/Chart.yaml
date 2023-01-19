@@ -7,6 +7,6 @@ dependencies:
 - version: 1.2.1
   name: common
   repository: https://bjw-s.github.io/helm-charts
-name: nodered
+name: nodered-home
 
 
