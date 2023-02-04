@@ -10,4 +10,6 @@ unifi-poller:
 
   metrics:
     enabled: true
+  image:
+    tag: 2.7.11
     
