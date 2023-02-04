@@ -11,5 +11,6 @@ unifi-poller:
   metrics:
     enabled: true
   image:
+    repository: ghcr.io/unpoller/unpoller
     tag: 2.7.11
     
