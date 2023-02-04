@@ -29,7 +29,7 @@ spec:
         repoURL: https://bitbucket.org/spydersoftteam/ops-prod-cluster
         targetRevision: main
       destination:
-        server: https://cp-nonprod.gerega.net:6443
+        server: https://cp-prod.gerega.net:6443
         namespace: '{{path[1]}}'
       syncPolicy:
       #   automated: 
