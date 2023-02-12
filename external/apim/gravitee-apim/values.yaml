@@ -1,0 +1,44 @@
+apim3:
+  jdbc:
+      url: kubernetes://apim/secrets/gravitee-apim-secret/jdbc-conn
+      driver: https://go.microsoft.com/fwlink/?linkid=2222954
+  ui:
+    ingress:
+      enabled: true
+      hosts:
+      - apim.mattgerega.com
+  portal:
+    ingress:
+      enabled: true
+      hosts:
+      - developer.mattgerega.com
+  api:
+    ingress:
+      management:
+        enabled: true
+        hosts:
+        - apim.mattgerega.com
+      portal:
+        enabled: true
+        hosts:
+        - apim.mattgerega.com
+  gateway:
+    ingress:
+      enabled: true
+      path: /
+      hosts:
+      - apig.mattgerega.com
+    ratelimit:
+      redis:
+        host: kubernetes://apim/secrets/gravitee-apim-secret/redis-host
+        port: 6379
+        password: kubernetes://apim/secrets/gravitee-apim-secret/redis-password
+  management:
+    type: jdbc
+  ratelimit:
+    type: redis
+
+  es:
+    enabled: false
+  mongo:
+    rsEnabled: false
