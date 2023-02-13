@@ -11,5 +11,5 @@ elasticsearch:
         storage: 30Gi
     storageClassName: "nfs-client"
   envFrom:
-    — secretRef:
-        name: elastic-secret
+  — secretRef:
+      name: elastic-secret
