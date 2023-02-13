@@ -1,6 +1,6 @@
 elasticsearch:
-  replicas: 1
-  minimumMasterNodes: 1
+  replicas: 3
+  minimumMasterNodes: 2
   clusterName: apim-es
   persistence:
     enabled: true
@@ -10,11 +10,3 @@ elasticsearch:
       requests:
         storage: 30Gi
     storageClassName: "nfs-client"
-  secret:
-    enabled: false
-  protocol: http
-  createCert: false
-  esConfig:
-    elasticsearch.yml: |
-      xpack.security.enabled: false
-  clusterHealthCheckParams: 'wait_for_status=yellow&timeout=1s'
