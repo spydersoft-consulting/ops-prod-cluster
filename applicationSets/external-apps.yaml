@@ -12,6 +12,8 @@ spec:
       revision: HEAD
       directories:
       - path: external/**/*
+      - path: apim/**/*
+        exclude: true
   template:
     metadata:
       name: '{{path.basename}}'
