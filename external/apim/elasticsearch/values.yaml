@@ -13,4 +13,4 @@ elasticsearch:
   secret:
     enabled: false
   protocol: http
-    
+  createCert: false
