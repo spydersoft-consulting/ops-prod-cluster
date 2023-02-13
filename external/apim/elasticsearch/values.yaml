@@ -13,3 +13,4 @@ elasticsearch:
   envFrom:
   — secretRef:
       name: elastic-secret
+  protocol: http
