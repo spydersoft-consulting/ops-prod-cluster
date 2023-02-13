@@ -12,4 +12,5 @@ elasticsearch:
     storageClassName: "nfs-client"
   secret:
     enabled: false
+  protocol: http
     
