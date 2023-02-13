@@ -17,3 +17,4 @@ elasticsearch:
   esConfig:
     elasticsearch.yml: |
       xpack.security.enabled: false
+  clusterHealthCheckParams: 'wait_for_status=yellow&timeout=1s'
