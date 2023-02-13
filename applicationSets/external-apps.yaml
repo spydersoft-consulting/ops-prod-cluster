@@ -12,7 +12,7 @@ spec:
       revision: HEAD
       directories:
       - path: external/**/*
-      - path: apim/**/*
+      - path: external/apim/*
         exclude: true
   template:
     metadata:
