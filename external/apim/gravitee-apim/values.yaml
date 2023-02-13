@@ -1,7 +1,7 @@
 apim3:
   jdbc:
       url: kubernetes://apim/secrets/gravitee-apim-secret/jdbc-conn
-      driver: https://go.microsoft.com/fwlink/?linkid=2222954
+      driver: https://github.com/microsoft/mssql-jdbc/releases/download/v12.2.0/mssql-jdbc-12.2.0.jre11.jar
   ui:
     ingress:
       enabled: true
