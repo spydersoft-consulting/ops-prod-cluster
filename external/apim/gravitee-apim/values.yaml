@@ -40,5 +40,7 @@ apim3:
 
   es:
     enabled: false
+    endpoints:
+    - http://apim-es-master-headless:9200
   mongo:
     rsEnabled: false
