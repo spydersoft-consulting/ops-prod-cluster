@@ -14,3 +14,6 @@ elasticsearch:
     enabled: false
   protocol: http
   createCert: false
+  esConfig:
+    elasticsearch.yml: |
+      xpack.security.enabled: false
