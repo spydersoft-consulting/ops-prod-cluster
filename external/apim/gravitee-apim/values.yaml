@@ -39,7 +39,11 @@ apim3:
     type: redis
 
   es:
-    enabled: false
+    enabled: true
+    security:
+      enabled: true
+      username: kubernetes://apim/secrets/elastic-secret/ELASTIC_USERNAME
+      password: kubernetes://apim/secrets/elastic-secret/ELASTIC_PASSWORD
     endpoints:
     - http://apim-es-master-headless:9200
   mongo:
