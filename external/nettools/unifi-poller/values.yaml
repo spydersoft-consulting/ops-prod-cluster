@@ -1,16 +1,58 @@
-unifi-poller:
-  env:
-    TZ: "America/New_York"
-    UP_UNIFI_DEFAULT_URL: "https://unifi:8443"
-    UP_INFLUXDB_DISABLE: true
-    
-  envFrom:
-  - secretRef:
-      name: unifi-poller
+image:
+  repository: ghcr.io/unpoller/unpoller
+  pullPolicy: IfNotPresent
 
-  metrics:
+env:
+  TZ: "America/New_York"
+  UP_UNIFI_DEFAULT_URL: "https://unifi:8443"
+  UP_INFLUXDB_DISABLE: true
+  # UP_UNIFI_DEFAULT_USER: "unifipoller"
+  # UP_UNIFI_DEFAULT_PASS: "unifipoller"
+  # UP_PROMETHEUS_DISABLE: true
+
+envFrom:
+- secretRef:
+    name: unifi-poller
+
+service:
+  main:
+    ports:
+      http:
+        enabled: false
+      metrics:
+        enabled: true
+        protocol: TCP
+        port: 9130
+
+ingress:
+  main:
+    # -- Expose [unifi-poller's web interface](https://unifipoller.com/docs/advanced/webserver)
+    #    (if enabled in the configuration) via the k8s ingress by setting this true.
+    enabled: false
+
+influxdb:
+  # -- Create an InfluxDB instance as a [unifi-poller storage backend](https://unifipoller.com/docs/dependencies/influxdb).
+  #    See [bitnami/influxdb](https://github.com/bitnami/charts/tree/master/bitnami/influxdb) for more options.
+  enabled: false
+  # -- InfluxDB cluster deployment architecture.
+  architecture: standalone
+  # -- Database name to automatically initialize.
+  #    Be sure to match in unifi-poller's [influxdb config](https://unifipoller.com/docs/install/configuration#influxdb).
+  database: unifi
+  # -- Enable InfluxDB authentication, supported by unifi-poller.
+  #    Be sure to match in unifi-poller's [influxdb config](https://unifipoller.com/docs/install/configuration#influxdb).
+  authEnabled: false
+  persistence:
+    # -- Enable persistence to store in a PV so data survives pod restarts.
+    enabled: false
+    # storageClass: ""
+    # size: 8Gi
+
+serviceMonitor:
+  main:
     enabled: true
-  image:
-    repository: ghcr.io/unpoller/unpoller
-    tag: v2.7.11
-    
+    endpoints:
+      - port: metrics
+        path: /metrics
+        interval: 1m
+        scrapeTimeout: 30s
