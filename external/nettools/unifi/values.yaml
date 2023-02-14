@@ -1,6 +1,6 @@
 unifi:
   image:
-    tag: "v7.3.76"
+    tag: "v7.3.83"
   env:
     TZ: "America/New_York"
 
@@ -25,6 +25,7 @@ unifi:
           enabled: true
           port: 8080
           protocol: TCP
+          nodePort: 30080
 
     stun:
       enabled: true
@@ -35,6 +36,7 @@ unifi:
           enabled: true
           port: 3478
           protocol: UDP
+          nodePort: 30478
     
     syslog:
       enabled: true
@@ -45,6 +47,7 @@ unifi:
           enabled: true
           port: 5514
           protocol: UDP
+          nodePort: 32514
     
     discovery:
       enabled: true
@@ -55,6 +58,7 @@ unifi:
           enabled: true
           port: 10001
           protocol: UDP
+          nodePort: 30001
 
   ingress:
     main:
