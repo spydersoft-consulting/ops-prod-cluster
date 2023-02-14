@@ -120,7 +120,7 @@ ingress:
       nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
       nginx.ingress.kubernetes.io/proxy-body-size: 100M
 
-securityContext:
+podSecurityContext:
   fsGroup: 999
 
 persistence:
