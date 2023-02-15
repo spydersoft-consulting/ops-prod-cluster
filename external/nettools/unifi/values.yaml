@@ -1,5 +1,5 @@
 image:
-  repository: jacobalberty/unifi
+  repository: ghcr.io/jacobalberty/unifi-docker
   pullPolicy: IfNotPresent
 
 env:
