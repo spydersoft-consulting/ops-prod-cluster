@@ -14,7 +14,7 @@ sonarqube:
     storageClass: nfs-client
   jdbcOverwrite:
     enable: true
-    jdbcUrl: "jdbc:sqlserver://sqlprod01.gerega.net;databaseName=Sonarqube;encrypt=false"
+    jdbcUrl: "jdbc:sqlserver://sqlprod01.ad.mattgerega.net;databaseName=Sonarqube;encrypt=false"
     jdbcUsername: sonarqube
     jdbcSecretName: sonarqube-jdbc-credentials
     jdbcSecretPasswordKey: jdbc-password
