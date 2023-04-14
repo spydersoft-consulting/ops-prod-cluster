@@ -1,12 +1,12 @@
-version: 1.3.2
-dependencies:
-- version: 1.3.2
-  repository: https://bjw-s.github.io/helm-charts
-  name: common
-appVersion: 2023.4.2
+type: application
 apiVersion: v2
 description: Home Assistant Helm Chart - Server only, no database
+appVersion: 2023.4.2
 name: homeassistant
-type: application
+version: 1.4.0
+dependencies:
+- name: common
+  version: 1.4.0
+  repository: https://bjw-s.github.io/helm-charts
 
 
