@@ -1,7 +1,7 @@
 type: application
 apiVersion: v2
 description: Home Assistant Helm Chart - Server only, no database
-appVersion: 2023.4.2
+appVersion: 2023.4.6
 name: homeassistant
 version: 1.4.0
 dependencies:

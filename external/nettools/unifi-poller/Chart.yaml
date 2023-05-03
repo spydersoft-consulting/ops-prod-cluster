@@ -1,6 +1,6 @@
 type: application
 apiVersion: v2
-appVersion: v2.7.12
+appVersion: v2.7.13
 name: unifi-poller
 version: 1.4.0
 dependencies:
