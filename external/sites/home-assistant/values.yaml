@@ -20,7 +20,7 @@ ingress:
     annotations:
       nginx.org/websocket-services: home-assistant
     hosts:
-      - host: home.mattgerega.com
+      - host: home.mattgerega.net
         paths:
           - path: /
             pathType: Prefix
