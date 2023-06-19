@@ -1,6 +1,6 @@
 type: application
 name: unifi
-appVersion: v7.3.83
+appVersion: v7.4.156
 dependencies:
 - name: common
   repository: https://bjw-s.github.io/helm-charts
