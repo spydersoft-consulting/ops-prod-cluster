@@ -1,0 +1,148 @@
+---
+# Source: unifi-client/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unifi-client-config-js
+  labels:
+    app.kubernetes.io/instance: unifi-client
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: unifi-client
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: unifi-client-0.1.0
+data:
+  config.js: |
+    window.unifi_client_api = {
+      backend: 'https://api.mattgerega.com/unifi/ipmanager',
+    };
+  
+    window.unifi_client_auth = {
+      authority: 'https://auth.mattgerega.com/',
+      clientId: 'unifiwebclient',
+      redirectUri: 'https://uni.mattgerega.com',
+    };
+---
+# Source: unifi-client/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-client
+  labels:
+    app.kubernetes.io/service: unifi-client
+    app.kubernetes.io/instance: unifi-client
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: unifi-client
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: unifi-client-0.1.0
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/instance: unifi-client
+    app.kubernetes.io/name: unifi-client
+---
+# Source: unifi-client/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unifi-client
+  labels:
+    app.kubernetes.io/instance: unifi-client
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: unifi-client
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: unifi-client-0.1.0
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: unifi-client
+      app.kubernetes.io/instance: unifi-client
+  template:
+    metadata:
+      annotations:
+        
+        checksum/config: ebe6c3ad99cb47108d4f9703ec4684b04d159458ef15765b3da854cbb79e4005
+      labels:
+        app.kubernetes.io/name: unifi-client
+        app.kubernetes.io/instance: unifi-client
+    spec:
+      
+      imagePullSecrets:
+        - name: spydersoft-proget
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: true
+      containers:
+        - name: unifi-client
+          image: proget.mattgerega.com/spydersoft/ha/unifi.client:0.1.17
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: config-js
+              mountPath: /usr/share/nginx/html/config.js
+              subPath: config.js
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8080
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8080
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 30
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            tcpSocket:
+              port: 8080
+            timeoutSeconds: 1
+      volumes:
+        - name: config-js
+          configMap:
+            name: unifi-client-config-js
+---
+# Source: unifi-client/templates/common.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: unifi-client
+  labels:
+    app.kubernetes.io/instance: unifi-client
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: unifi-client
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: unifi-client-0.1.0
+    ingressClassName: nginx
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: "uni.mattgerega.com"
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: unifi-client
+                port:
+                  number: 80
