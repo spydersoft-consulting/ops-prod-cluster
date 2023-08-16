@@ -7,6 +7,6 @@ dependencies:
   repository: https://bjw-s.github.io/helm-charts
   version: 1.5.1
 apiVersion: v2
-appVersion: 23.0.10
+appVersion: 23.0.14
 
 
