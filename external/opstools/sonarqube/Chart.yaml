@@ -1,12 +1,12 @@
-description: Sonarqube Helm Chart
 name: sonarqube
-appVersion: 7.0.0+449
 type: application
+description: Sonarqube Helm Chart
+appVersion: 7.0.0+449
 apiVersion: v2
 dependencies:
-- version: 10.1.0+628
-  name: sonarqube
+- name: sonarqube
+  version: 10.2.0+738
   repository: https://SonarSource.github.io/helm-chart-sonarqube
-version: 10.1.0+628
+version: 10.2.0+738
 
 
