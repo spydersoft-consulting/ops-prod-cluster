@@ -3,9 +3,9 @@ name: wp-mattgerega
 type: application
 dependencies:
 - name: wordpress
-  version: 17.1.9
+  version: 17.1.16
   repository: https://charts.bitnami.com/bitnami
 appVersion: 6.0.2
-version: 17.1.9
+version: 17.1.16
 
 

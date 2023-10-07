@@ -1,11 +1,11 @@
 apiVersion: v2
-version: 4.0.8
 name: gravitee-apim
-appVersion: 3.18.10
-dependencies:
-- version: 4.0.8
-  repository: https://helm.gravitee.io
-  name: apim3
 type: application
+dependencies:
+- name: apim3
+  version: 4.1.0
+  repository: https://helm.gravitee.io
+appVersion: 3.18.10
+version: 4.1.0
 
 
