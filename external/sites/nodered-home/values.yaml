@@ -1,6 +1,12 @@
-image:
-  repository: nodered/node-red
-  pullPolicy: IfNotPresent
+
+controllers:
+  main:
+    containers:
+      main:
+        image:
+          repository: nodered/node-red
+          tag: 3.0.2-18
+          pullPolicy: IfNotPresent
 
 strategy:
   type: Recreate
@@ -27,22 +33,23 @@ service:
 ingress:
   main:
     enabled: true
+    className: nginx
     annotations: 
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/rewrite-target: /
       nginx.ingress.kubernetes.io/proxy-body-size: "500M"
-    labels: 
-      ingressClassName: "nginx"
     hosts:
       - host: nodered.mattgerega.net
         paths:
           - path: /
             pathType: Prefix
+            service:
+              name: main
 
 persistence:
   data:
     enabled: true
-    type: pvc
+    type: persistentVolumeClaim
     accessMode: ReadWriteMany
     size: 2Gi
     storageClass: nfs-client
