@@ -7,22 +7,20 @@ controllers:
           repository: nodered/node-red
           tag: 3.0.2-18
           pullPolicy: IfNotPresent
-
-strategy:
-  type: Recreate
-
-env:
-  # -- Set the container timezone
-  TZ: "America/New_York"
-  # -- Node.js runtime arguments
-  NODE_OPTIONS:
-  # -- Setting to `true` starts Node-RED with the projects feature enabled
-  NODE_RED_ENABLE_PROJECTS:
-  # -- Setting to `true` starts Node-RED in safe (not running) mode
-  NODE_RED_ENABLE_SAFE_MODE:
-  # -- Location of the flows configuration file.
-  # If you set `FLOWS: ""` then the flow file can be set via the `flowFile` property in the `settings.js` file.
-  FLOWS: flows.json
+        strategy:
+          type: Recreate
+        env:
+          # -- Set the container timezone
+          TZ: "America/New_York"
+          # -- Node.js runtime arguments
+          NODE_OPTIONS:
+          # -- Setting to `true` starts Node-RED with the projects feature enabled
+          NODE_RED_ENABLE_PROJECTS:
+          # -- Setting to `true` starts Node-RED in safe (not running) mode
+          NODE_RED_ENABLE_SAFE_MODE:
+          # -- Location of the flows configuration file.
+          # If you set `FLOWS: ""` then the flow file can be set via the `flowFile` property in the `settings.js` file.
+          FLOWS: flows.json
 
 service:
   main:
