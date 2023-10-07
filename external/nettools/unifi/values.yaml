@@ -136,16 +136,21 @@ ingress:
     annotations:
       nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
       nginx.ingress.kubernetes.io/proxy-body-size: 100M
+      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
+      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
 
 persistence:
   data:
     enabled: true
-    mountPath: /unifi
     type: persistentVolumeClaim
     storageClass: nfs-client
     accessMode: ReadWriteOnce
     size: 5Gi
     retain: true
+    globalMounts:
+      - path: /unifi
+        readOnly: false
 
 customCert:
   enabled: true
