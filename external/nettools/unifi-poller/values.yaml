@@ -1,18 +1,24 @@
-image:
-  repository: ghcr.io/unpoller/unpoller
-  pullPolicy: IfNotPresent
 
-env:
-  TZ: "America/New_York"
-  UP_UNIFI_DEFAULT_URL: "https://unifi:8443"
-  UP_INFLUXDB_DISABLE: true
-  # UP_UNIFI_DEFAULT_USER: "unifipoller"
-  # UP_UNIFI_DEFAULT_PASS: "unifipoller"
-  # UP_PROMETHEUS_DISABLE: true
+controllers:
+  main:
+    containers:
+      main:
+        image:
+          repository: ghcr.io/unpoller/unpoller
+          tag: v2.8.1
+          pullPolicy: IfNotPresent
 
-envFrom:
-- secretRef:
-    name: unifi-poller
+        env:
+          TZ: "America/New_York"
+          UP_UNIFI_DEFAULT_URL: "https://unifi:8443"
+          UP_INFLUXDB_DISABLE: true
+          # UP_UNIFI_DEFAULT_USER: "unifipoller"
+          # UP_UNIFI_DEFAULT_PASS: "unifipoller"
+          # UP_PROMETHEUS_DISABLE: true
+
+        envFrom:
+        - secretRef:
+            name: unifi-poller
 
 service:
   main:
