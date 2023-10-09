@@ -4,6 +4,7 @@ controllers:
       main:
         image:
           repository: proget.inedo.com/productimages/inedo/proget
+          tag: 23.0.14
           pullPolicy: IfNotPresent
 
         strategy:
