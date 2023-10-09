@@ -1,13 +1,17 @@
-image:
-  repository: proget.inedo.com/productimages/inedo/proget
-  pullPolicy: IfNotPresent
+controllers:
+  main:
+    containers:
+      main:
+        image:
+          repository: proget.inedo.com/productimages/inedo/proget
+          pullPolicy: IfNotPresent
 
-strategy:
-  type: Recreate
+        strategy:
+          type: Recreate
 
-envFrom:
-  - secretRef:
-      name: proget-secrets
+        envFrom:
+          - secretRef:
+              name: proget-secrets
 
 service:
   main:
@@ -18,22 +22,30 @@ service:
 ingress:
   main:
     enabled: true
+    className: nginx
     annotations: 
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/rewrite-target: /
       nginx.ingress.kubernetes.io/proxy-body-size: "500M"
-    labels: 
-      ingressClassName: "nginx"
+      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
+      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
+
     hosts:
       - host: proget.mattgerega.com
         paths:
           - path: /
             pathType: Prefix
+            service:
+              name: main
 
 persistence:
   packages:
     enabled: true
+    type: persistentVolumeClaim
     existingClaim: progetdata-claim
     emptyDir:
       enabled: false
-    mountPath: /var/proget/packages
+    globalMounts:
+      - path: /var/proget/packages
+        readOnly: false
