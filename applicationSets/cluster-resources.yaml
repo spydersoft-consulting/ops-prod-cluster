@@ -12,7 +12,7 @@ spec:
   project: cluster-tools
   source:
     path: cluster-resources
-    repoURL: https://bitbucket.org/spydersoftteam/ops-prod-cluster
+    repoURL: https://github.com/spydersoft-consulting/ops-prod-cluster
     targetRevision: HEAD
 
     directory:
