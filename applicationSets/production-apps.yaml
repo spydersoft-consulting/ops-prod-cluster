@@ -8,7 +8,7 @@ metadata:
 spec:
   generators:
   - git:
-      repoURL: https://bitbucket.org/spydersoftteam/ops-prod-cluster
+      repoURL: https://github.com/spydersoft-consulting/ops-prod-cluster
       revision: HEAD
       directories:
       - path: apps/**/production/*
@@ -21,7 +21,7 @@ spec:
     spec:
       project: '{{ path[1] }}-apps'
       source:
-        repoURL: https://bitbucket.org/spydersoftteam/ops-prod-cluster
+        repoURL: https://github.com/spydersoft-consulting/ops-prod-cluster
         targetRevision: main
         path: '{{ path }}'
         directory:
