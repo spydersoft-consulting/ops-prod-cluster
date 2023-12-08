@@ -1,6 +1,9 @@
 environment: production
 
 redis:
+  image: 
+    repository: redis/redis-stack-server
+    tag: 7.2.0-v6
   global:
     storageClass: nfs-client
   architecture: standalone
@@ -10,6 +13,11 @@ redis:
     existingSecretPasswordKey: password
 
   master:
+    configuration: | 
+      loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000
+      loadmodule /opt/redis-stack/lib/redistimeseries.so
+      loadmodule /opt/redis-stack/lib/rejson.so
+      loadmodule /opt/redis-stack/lib/redisbloom.so
     resources:
       requests:
         cpu: 50m
