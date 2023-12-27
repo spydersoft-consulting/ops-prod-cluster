@@ -1,25 +1,3 @@
-
-controllers:
-  main:
-    containers:
-      main:
-        image:
-          repository: ghcr.io/unpoller/unpoller
-          tag: v2.9.4
-          pullPolicy: IfNotPresent
-
-        env:
-          TZ: "America/New_York"
-          UP_UNIFI_DEFAULT_URL: "https://unifi:8443"
-          UP_INFLUXDB_DISABLE: true
-          # UP_UNIFI_DEFAULT_USER: "unifipoller"
-          # UP_UNIFI_DEFAULT_PASS: "unifipoller"
-          # UP_PROMETHEUS_DISABLE: true
-
-        envFrom:
-        - secretRef:
-            name: unifi-poller
-
 service:
   main:
     ports:
@@ -27,38 +5,39 @@ service:
         enabled: false
       metrics:
         enabled: true
-        protocol: TCP
         port: 9130
-
-ingress:
-  main:
-    # -- Expose [unifi-poller's web interface](https://unifipoller.com/docs/advanced/webserver)
-    #    (if enabled in the configuration) via the k8s ingress by setting this true.
-    enabled: false
-
+        protocol: TCP
 influxdb:
-  # -- Create an InfluxDB instance as a [unifi-poller storage backend](https://unifipoller.com/docs/dependencies/influxdb).
-  #    See [bitnami/influxdb](https://github.com/bitnami/charts/tree/master/bitnami/influxdb) for more options.
   enabled: false
-  # -- InfluxDB cluster deployment architecture.
-  architecture: standalone
-  # -- Database name to automatically initialize.
-  #    Be sure to match in unifi-poller's [influxdb config](https://unifipoller.com/docs/install/configuration#influxdb).
-  database: unifi
-  # -- Enable InfluxDB authentication, supported by unifi-poller.
-  #    Be sure to match in unifi-poller's [influxdb config](https://unifipoller.com/docs/install/configuration#influxdb).
   authEnabled: false
   persistence:
-    # -- Enable persistence to store in a PV so data survives pod restarts.
     enabled: false
-    # storageClass: ""
-    # size: 8Gi
-
+  database: unifi
+  architecture: standalone
 serviceMonitor:
   main:
     enabled: true
     endpoints:
-      - port: metrics
-        path: /metrics
-        interval: 1m
-        scrapeTimeout: 30s
+    - scrapeTimeout: 30s
+      port: metrics
+      path: /metrics
+      interval: 1m
+ingress:
+  main:
+    enabled: false
+controllers:
+  main:
+    containers:
+      main:
+        env:
+          UP_UNIFI_DEFAULT_URL: https://unifi:8443
+          TZ: America/New_York
+          UP_INFLUXDB_DISABLE: true
+        image:
+          tag: v2.9.5
+          pullPolicy: IfNotPresent
+          repository: ghcr.io/unpoller/unpoller
+        envFrom:
+        - secretRef:
+            name: unifi-poller
+

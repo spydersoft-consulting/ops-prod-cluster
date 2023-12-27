@@ -7,7 +7,7 @@ controllers:
     containers:
       main:
         image:
-          repository: nexusforge/unifi-docker
+          repository: jacobalberty/unifi
           tag: v8.0.24
           pullPolicy: IfNotPresent
 
