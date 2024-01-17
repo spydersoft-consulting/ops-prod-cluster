@@ -1,23 +1,15 @@
-environment: production
-
 redis:
-  image: 
-    repository: redis/redis-stack-server
-    tag: 7.2.0-v6
-  global:
-    storageClass: nfs-client
-  architecture: standalone
-
   auth:
     existingSecret: redis-secrets
     existingSecretPasswordKey: password
-
+  metrics:
+    enabled: true
+    serviceMonitor:
+      scrapeTimeout: 30s
+      enabled: true
+  architecture: standalone
   master:
-    configuration: | 
-      loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000
-      loadmodule /opt/redis-stack/lib/redistimeseries.so
-      loadmodule /opt/redis-stack/lib/rejson.so
-      loadmodule /opt/redis-stack/lib/redisbloom.so
+    disableCommands: []
     resources:
       requests:
         cpu: 50m
@@ -25,9 +17,15 @@ redis:
       limits:
         cpu: 100m
         memory: 200Mi
-    disableCommands: []
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-      scrapeTimeout: 30s
+    configuration: |
+      loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000
+      loadmodule /opt/redis-stack/lib/redistimeseries.so
+      loadmodule /opt/redis-stack/lib/rejson.so
+      loadmodule /opt/redis-stack/lib/redisbloom.so
+  global:
+    storageClass: nfs-client
+  image:
+    tag: v7.2.0-v7
+    repository: redis/redis-stack-server
+environment: production
+
