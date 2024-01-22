@@ -6,8 +6,8 @@ metadata:
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: spydersoft-proget
-  namespace: production
+  name: ra-spydersoft-proget
+  namespace: ra-prod-techradar
   labels:
     name: proget-cr-secret
 spec:
