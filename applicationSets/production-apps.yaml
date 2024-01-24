@@ -11,7 +11,7 @@ spec:
       repoURL: https://github.com/spydersoft-consulting/ops-prod-cluster
       revision: HEAD
       directories:
-      - path: apps/**/production/*
+      - path: apps/**/**/*
   template:
     metadata:
       name: '{{path.basename}}-{{path[2]}}'
