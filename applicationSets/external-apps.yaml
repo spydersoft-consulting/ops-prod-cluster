@@ -33,3 +33,11 @@ spec:
       destination:
         server: https://cp-production.gerega.net:6443
         namespace: '{{path[1]}}'
+      ignoreDifferences:
+      - group: "*"
+        kind: "Deployment"
+        jsonPointers:
+        - /spec/template/annotations/kubectl.kubernetes.io~restartedAt
+      syncPolicy:
+        syncOptions:
+          - RespectIgnoreDifferences=true
