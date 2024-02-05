@@ -1,132 +1,132 @@
+service:
+  controller:
+    controller: main
+    ports:
+      npcontroller:
+        port: 8080
+        protocol: TCP
+        nodePort: 30080
+        enabled: true
+    primary: false
+    enabled: true
+    type: NodePort
+  main:
+    ports:
+      portal-https:
+        protocol: HTTPS
+        port: 8843
+        enabled: false
+      http:
+        protocol: HTTPS
+        port: 8443
+      portal-http:
+        protocol: HTTP
+        port: 8880
+        enabled: false
+      controller:
+        protocol: TCP
+        port: 8080
+        enabled: false
+      speedtest:
+        protocol: TCP
+        port: 6789
+        enabled: true
+      syslog:
+        protocol: UDP
+        port: 5514
+        enabled: false
+      discovery:
+        protocol: UDP
+        port: 10001
+        enabled: false
+      stun:
+        protocol: UDP
+        port: 3478
+        enabled: false
+    controller: main
+  syslog:
+    controller: main
+    ports:
+      syslog:
+        port: 5514
+        protocol: UDP
+        nodePort: 32514
+        enabled: true
+    primary: false
+    enabled: true
+    type: NodePort
+  discovery:
+    controller: main
+    ports:
+      discovery:
+        port: 10001
+        protocol: UDP
+        nodePort: 30001
+        enabled: true
+    primary: false
+    enabled: true
+    type: NodePort
+  stun:
+    controller: main
+    ports:
+      stun:
+        port: 3478
+        protocol: UDP
+        nodePort: 30478
+        enabled: true
+    primary: false
+    enabled: true
+    type: NodePort
+customCert:
+  certSecret: mattgerega.com
+  isChain: true
+  enabled: true
+ingress:
+  main:
+    hosts:
+    - paths:
+      - service:
+          name: main
+          port: http
+        path: /
+        pathType: Prefix
+      host: unifi.mattgerega.com
+    className: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
+      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
+      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-body-size: 100M
+    enabled: true
+persistence:
+  data:
+    accessMode: ReadWriteOnce
+    globalMounts:
+    - readOnly: false
+      path: /unifi
+    storageClass: nfs-client
+    enabled: true
+    size: 5Gi
+    retain: true
+    type: persistentVolumeClaim
+defaultPodOptions:
+  securityContext:
+    fsGroup: 999
 controllers:
   main:
     containers:
       main:
         image:
           repository: jacobalberty/unifi
-          tag: v8.0.26
+          tag: v8.0.28
           pullPolicy: IfNotPresent
         env:
+          UNIFI_STDOUT: "true"
+          UNIFI_GID: "999"
+          JVM_MAX_HEAP_SIZE: 1024M
           JVM_INIT_HEAP_SIZE: 
           RUNAS_UID0: "false"
-          UNIFI_GID: "999"
-          UNIFI_STDOUT: "true"
-          JVM_MAX_HEAP_SIZE: 1024M
-          TZ: America/New_York
           UNIFI_UID: "999"
-customCert:
-  isChain: true
-  enabled: true
-  certSecret: mattgerega.com
-persistence:
-  data:
-    globalMounts:
-    - path: /unifi
-      readOnly: false
-    type: persistentVolumeClaim
-    enabled: true
-    retain: true
-    storageClass: nfs-client
-    accessMode: ReadWriteOnce
-    size: 5Gi
-defaultPodOptions:
-  securityContext:
-    fsGroup: 999
-service:
-  stun:
-    ports:
-      stun:
-        nodePort: 30478
-        protocol: UDP
-        enabled: true
-        port: 3478
-    controller: main
-    primary: false
-    type: NodePort
-    enabled: true
-  main:
-    controller: main
-    ports:
-      stun:
-        protocol: UDP
-        enabled: false
-        port: 3478
-      http:
-        protocol: HTTPS
-        port: 8443
-      discovery:
-        protocol: UDP
-        enabled: false
-        port: 10001
-      controller:
-        protocol: TCP
-        enabled: false
-        port: 8080
-      syslog:
-        protocol: UDP
-        enabled: false
-        port: 5514
-      speedtest:
-        protocol: TCP
-        enabled: true
-        port: 6789
-      portal-http:
-        protocol: HTTP
-        enabled: false
-        port: 8880
-      portal-https:
-        protocol: HTTPS
-        enabled: false
-        port: 8843
-  syslog:
-    ports:
-      syslog:
-        nodePort: 32514
-        protocol: UDP
-        enabled: true
-        port: 5514
-    controller: main
-    primary: false
-    type: NodePort
-    enabled: true
-  discovery:
-    ports:
-      discovery:
-        nodePort: 30001
-        protocol: UDP
-        enabled: true
-        port: 10001
-    controller: main
-    primary: false
-    type: NodePort
-    enabled: true
-  controller:
-    ports:
-      npcontroller:
-        nodePort: 30080
-        protocol: TCP
-        enabled: true
-        port: 8080
-    controller: main
-    primary: false
-    type: NodePort
-    enabled: true
-ingress:
-  main:
-    className: nginx
-    enabled: true
-    annotations:
-      nginx.ingress.kubernetes.io/backend-protocol: HTTPS
-      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
-      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
-      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
-      nginx.ingress.kubernetes.io/proxy-body-size: 100M
-    hosts:
-    - host: unifi.mattgerega.com
-      paths:
-      - path: /
-        service:
-          name: main
-          port: http
-        pathType: Prefix
+          TZ: America/New_York
 
