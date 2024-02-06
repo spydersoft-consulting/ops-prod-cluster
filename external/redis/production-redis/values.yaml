@@ -31,4 +31,9 @@ redis:
     disableCommands: []
   global:
     storageClass: nfs-client
+  networkPolicy:
+    extraIngress:
+      - ports:
+        - port: 4143
+          protocol: TCP
 
