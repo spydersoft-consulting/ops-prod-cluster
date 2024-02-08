@@ -1,53 +1,44 @@
-
+persistence:
+  data:
+    storageClass: nfs-client
+    accessMode: ReadWriteMany
+    size: 2Gi
+    enabled: true
+    type: persistentVolumeClaim
+ingress:
+  main:
+    className: nginx
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/proxy-body-size: 500M
+    hosts:
+    - host: nodered.mattgerega.net
+      paths:
+      - path: /
+        service:
+          name: main
+        pathType: Prefix
+    enabled: true
+service:
+  main:
+    ports:
+      http:
+        port: 1880
 controllers:
   main:
     containers:
       main:
         image:
           repository: nodered/node-red
-          tag: 3.1.3
           pullPolicy: IfNotPresent
+          tag: 3.1.5
         strategy:
           type: Recreate
         env:
-          # -- Set the container timezone
-          TZ: "America/New_York"
-          # -- Node.js runtime arguments
-          NODE_OPTIONS:
-          # -- Setting to `true` starts Node-RED with the projects feature enabled
-          NODE_RED_ENABLE_PROJECTS:
-          # -- Setting to `true` starts Node-RED in safe (not running) mode
-          NODE_RED_ENABLE_SAFE_MODE:
-          # -- Location of the flows configuration file.
-          # If you set `FLOWS: ""` then the flow file can be set via the `flowFile` property in the `settings.js` file.
+          NODE_RED_ENABLE_SAFE_MODE: 
           FLOWS: flows.json
+          NODE_OPTIONS: 
+          NODE_RED_ENABLE_PROJECTS: 
+          TZ: America/New_York
 
-service:
-  main:
-    ports:
-      http:
-        port: 1880
-
-ingress:
-  main:
-    enabled: true
-    className: nginx
-    annotations: 
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/rewrite-target: /
-      nginx.ingress.kubernetes.io/proxy-body-size: "500M"
-    hosts:
-      - host: nodered.mattgerega.net
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              name: main
-
-persistence:
-  data:
-    enabled: true
-    type: persistentVolumeClaim
-    accessMode: ReadWriteMany
-    size: 2Gi
-    storageClass: nfs-client
