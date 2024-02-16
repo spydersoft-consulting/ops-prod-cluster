@@ -1,52 +1,47 @@
-controllers:
-  main:
-    containers:
-      main:
-        image:
-          repository: proget.inedo.com/productimages/inedo/proget
-          tag: 23.0.26
-          pullPolicy: IfNotPresent
-
-        strategy:
-          type: Recreate
-
-        envFrom:
-          - secretRef:
-              name: proget-secrets
-
 service:
   main:
     ports:
       http:
         port: 80
-
-ingress:
+controllers:
   main:
-    enabled: true
-    className: nginx
-    annotations: 
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/rewrite-target: /
-      nginx.ingress.kubernetes.io/proxy-body-size: "500M"
-      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
-      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
-      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
-
-    hosts:
-      - host: proget.mattgerega.com
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              name: main
-
+    containers:
+      main:
+        image:
+          tag: 23.0.28
+          repository: proget.inedo.com/productimages/inedo/proget
+          pullPolicy: IfNotPresent
+        strategy:
+          type: Recreate
+        envFrom:
+        - secretRef:
+            name: proget-secrets
 persistence:
   packages:
     enabled: true
     type: persistentVolumeClaim
-    existingClaim: progetdata-claim
     emptyDir:
       enabled: false
     globalMounts:
-      - path: /var/proget/packages
-        readOnly: false
+    - readOnly: false
+      path: /var/proget/packages
+    existingClaim: progetdata-claim
+ingress:
+  main:
+    className: nginx
+    enabled: true
+    annotations:
+      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
+      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-body-size: 500M
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
+    hosts:
+    - host: proget.mattgerega.com
+      paths:
+      - service:
+          name: main
+        pathType: Prefix
+        path: /
+
