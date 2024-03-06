@@ -1,43 +1,43 @@
-service:
-  main:
-    ports:
-      http:
-        enabled: false
-      metrics:
-        enabled: true
-        port: 9130
-        protocol: TCP
-influxdb:
-  enabled: false
-  authEnabled: false
-  persistence:
-    enabled: false
-  database: unifi
-  architecture: standalone
-serviceMonitor:
-  main:
-    enabled: true
-    endpoints:
-    - scrapeTimeout: 30s
-      port: metrics
-      path: /metrics
-      interval: 1m
-ingress:
-  main:
-    enabled: false
 controllers:
   main:
     containers:
       main:
+        envFrom:
+        - secretRef:
+            name: unifi-poller
+        image:
+          tag: v2.10.0
+          pullPolicy: IfNotPresent
+          repository: ghcr.io/unpoller/unpoller
         env:
           UP_UNIFI_DEFAULT_URL: https://unifi:8443
           TZ: America/New_York
           UP_INFLUXDB_DISABLE: true
-        image:
-          tag: v2.9.5
-          pullPolicy: IfNotPresent
-          repository: ghcr.io/unpoller/unpoller
-        envFrom:
-        - secretRef:
-            name: unifi-poller
+influxdb:
+  persistence:
+    enabled: false
+  authEnabled: false
+  architecture: standalone
+  database: unifi
+  enabled: false
+serviceMonitor:
+  main:
+    endpoints:
+    - path: /metrics
+      interval: 1m
+      port: metrics
+      scrapeTimeout: 30s
+    enabled: true
+service:
+  main:
+    ports:
+      metrics:
+        port: 9130
+        enabled: true
+        protocol: TCP
+      http:
+        enabled: false
+ingress:
+  main:
+    enabled: false
 
