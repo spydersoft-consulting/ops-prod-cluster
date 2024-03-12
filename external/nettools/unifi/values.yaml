@@ -11,6 +11,9 @@ service:
     enabled: true
     type: NodePort
   main:
+    enabled: true
+    primary: true
+    type: ClusterIP
     ports:
       portal-https:
         protocol: HTTPS
@@ -115,6 +118,11 @@ defaultPodOptions:
     fsGroup: 999
 controllers:
   main:
+    enabled: true
+    type: deployment
+    replicas: 1
+    strategy: Recreate
+    revisionHistoryLimit: 3
     containers:
       main:
         image:
@@ -129,4 +137,32 @@ controllers:
           RUNAS_UID0: "false"
           UNIFI_UID: "999"
           TZ: America/New_York
+        probes:
+          liveness:
+            enabled: true
+            custom: false
+            type: TCP
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: false
+            type: TCP
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          startup:
+            enabled: true
+            custom: false
+            type: TCP
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 5
+              timeoutSeconds: 1
+              failureThreshold: 30
 
