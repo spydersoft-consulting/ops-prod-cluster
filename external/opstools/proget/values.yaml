@@ -5,7 +5,8 @@ ingress:
       paths:
       - pathType: Prefix
         service:
-          name: main
+          identifier: main
+          port: http
         path: /
     enabled: true
     className: nginx
@@ -18,11 +19,21 @@ ingress:
       nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
 service:
   main:
+    controller: main
+    primary: true
+    type: ClusterIP
     ports:
       http:
+        enabled: true
+        primary: true
         port: 80
 controllers:
   main:
+    enabled: true
+    type: deployment
+    replicas: 1
+    strategy: Recreate
+    revisionHistoryLimit: 3
     containers:
       main:
         image:
@@ -34,6 +45,34 @@ controllers:
         envFrom:
         - secretRef:
             name: proget-secrets
+        probes:
+          liveness:
+            enabled: true
+            custom: false
+            type: TCP
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: false
+            type: TCP
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          startup:
+            enabled: true
+            custom: false
+            type: TCP
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 5
+              timeoutSeconds: 1
+              failureThreshold: 30
 persistence:
   packages:
     existingClaim: progetdata-claim
