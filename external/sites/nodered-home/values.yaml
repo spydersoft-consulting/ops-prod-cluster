@@ -33,7 +33,6 @@ controllers:
     revisionHistoryLimit: 3
     containers:
       main:
-        enableServiceLinks: true
         env:
           FLOWS: flows.json
           NODE_RED_ENABLE_PROJECTS: 
