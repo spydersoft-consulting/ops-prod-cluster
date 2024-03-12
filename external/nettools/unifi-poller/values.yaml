@@ -1,5 +1,10 @@
 controllers:
   main:
+    enabled: true
+    type: deployment
+    replicas: 1
+    strategy: Recreate
+    revisionHistoryLimit: 3
     containers:
       main:
         envFrom:
@@ -13,6 +18,34 @@ controllers:
           UP_UNIFI_DEFAULT_URL: https://unifi:8443
           TZ: America/New_York
           UP_INFLUXDB_DISABLE: true
+        probes:
+          liveness:
+            enabled: true
+            custom: false
+            type: TCP
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: false
+            type: TCP
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          startup:
+            enabled: true
+            custom: false
+            type: TCP
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 5
+              timeoutSeconds: 1
+              failureThreshold: 30
 influxdb:
   persistence:
     enabled: false
@@ -30,10 +63,14 @@ serviceMonitor:
     enabled: true
 service:
   main:
+    controller: main
+    primary: true
+    type: ClusterIP
     ports:
       metrics:
         port: 9130
         enabled: true
+        primary: true
         protocol: TCP
       http:
         enabled: false
