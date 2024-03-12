@@ -89,7 +89,7 @@ ingress:
     hosts:
     - paths:
       - service:
-          name: main
+          identifier: main
           port: http
         path: /
         pathType: Prefix
