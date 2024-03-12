@@ -55,11 +55,13 @@ influxdb:
   enabled: false
 serviceMonitor:
   main:
+    serviceName: '{{ include "bjw-s.common.lib.chart.names.fullname" $ }}'
     endpoints:
     - path: /metrics
       interval: 1m
       port: metrics
       scrapeTimeout: 30s
+      scheme: http
     enabled: true
 service:
   main:
