@@ -33,6 +33,7 @@ controllers:
     revisionHistoryLimit: 3
     containers:
       main:
+        enableServiceLinks: true
         env:
           FLOWS: flows.json
           NODE_RED_ENABLE_PROJECTS: 
@@ -70,9 +71,9 @@ controllers:
             type: TCP
             spec:
               initialDelaySeconds: 0
-              periodSeconds: 10
+              periodSeconds: 5
               timeoutSeconds: 1
-              failureThreshold: 3
+              failureThreshold: 30
 persistence:
   data:
     enabled: true
