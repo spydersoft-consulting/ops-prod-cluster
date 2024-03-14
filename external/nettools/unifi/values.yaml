@@ -147,6 +147,7 @@ controllers:
               periodSeconds: 10
               timeoutSeconds: 1
               failureThreshold: 3
+              port: 8443
           readiness:
             enabled: true
             custom: false
@@ -156,6 +157,7 @@ controllers:
               periodSeconds: 10
               timeoutSeconds: 1
               failureThreshold: 3
+              port: 8443
           startup:
             enabled: true
             custom: false
@@ -165,4 +167,5 @@ controllers:
               periodSeconds: 5
               timeoutSeconds: 1
               failureThreshold: 30
+              port: 8443
 
