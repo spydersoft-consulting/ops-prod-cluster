@@ -38,5 +38,9 @@ wordpress:
     auth:
       existingSecret: "wp-mg-dbsecrets"
     primary:
+      livenessProbe:
+        initialDelaySeconds: 600
+      readinessProbe:
+        initialDelaySeconds: 600
       persistence:
         storageClass: "nfs-client"
