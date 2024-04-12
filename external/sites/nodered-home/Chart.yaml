@@ -1,12 +1,12 @@
-name: nodered-home
+apiVersion: v2
 version: 3.1.0
+dependencies:
+- name: common
+  version: 3.1.0
+  repository: https://bjw-s.github.io/helm-charts
 description: Node Red Helm Chart
+name: nodered-home
 type: application
 appVersion: 3.0.2-18
-dependencies:
-- repository: https://bjw-s.github.io/helm-charts
-  name: common
-  version: 3.1.0
-apiVersion: v2
 
 
