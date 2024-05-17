@@ -5,11 +5,11 @@ wordpress:
 
   existingSecret: "wp-mg-secrets"
 
-  livenessProbe:
-    httpGet:
-      httpHeaders:
-        - name: X-Forwarded-Proto
-          value: https
+  # livenessProbe:
+  #   httpGet:
+  #     httpHeaders:
+  #       - name: X-Forwarded-Proto
+  #         value: https
   readinessProbe:
     httpGet:
       httpHeaders:
@@ -24,7 +24,6 @@ wordpress:
     hostname: www.mattgerega.com
     annotations:
       { nginx.ingress.kubernetes.io/proxy-body-size: 50M }
-
   persistence:
     enabled: true
     storageClass: "nfs-client"
