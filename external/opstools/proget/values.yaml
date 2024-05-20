@@ -1,27 +1,17 @@
-ingress:
+service:
   main:
-    annotations:
-      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
-      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
-      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/rewrite-target: /
-      nginx.ingress.kubernetes.io/proxy-body-size: 500M
-    className: nginx
-    hosts:
-    - host: proget.mattgerega.com
-      paths:
-      - path: /
-        pathType: Prefix
-        service:
-          identifier: main
-          port: http
-    enabled: true
+    primary: true
+    controller: main
+    ports:
+      http:
+        primary: true
+        port: 80
+        enabled: true
+    type: ClusterIP
 controllers:
   main:
+    replicas: 1
     strategy: Recreate
-    type: deployment
-    revisionHistoryLimit: 3
     enabled: true
     containers:
       main:
@@ -31,56 +21,66 @@ controllers:
         probes:
           startup:
             spec:
-              periodSeconds: 5
-              timeoutSeconds: 1
               failureThreshold: 30
               initialDelaySeconds: 0
+              periodSeconds: 5
+              timeoutSeconds: 1
             custom: false
-            enabled: true
             type: TCP
+            enabled: true
           liveness:
             spec:
-              periodSeconds: 10
-              timeoutSeconds: 1
               failureThreshold: 3
               initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
             custom: false
-            enabled: true
             type: TCP
+            enabled: true
           readiness:
             spec:
-              periodSeconds: 10
-              timeoutSeconds: 1
               failureThreshold: 3
               initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
             custom: false
-            enabled: true
             type: TCP
+            enabled: true
         image:
-          pullPolicy: IfNotPresent
           repository: proget.inedo.com/productimages/inedo/proget
-          tag: 24.0.3
+          pullPolicy: IfNotPresent
+          tag: 24.0.4
         strategy:
           type: Recreate
-    replicas: 1
+    revisionHistoryLimit: 3
+    type: deployment
 persistence:
   packages:
-    globalMounts:
-    - path: /var/proget/packages
-      readOnly: false
-    type: persistentVolumeClaim
     existingClaim: progetdata-claim
     enabled: true
     emptyDir:
       enabled: false
-service:
+    globalMounts:
+    - readOnly: false
+      path: /var/proget/packages
+    type: persistentVolumeClaim
+ingress:
   main:
-    ports:
-      http:
-        primary: true
-        enabled: true
-        port: 80
-    primary: true
-    controller: main
-    type: ClusterIP
+    annotations:
+      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
+      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/proxy-body-size: 500M
+    className: nginx
+    hosts:
+    - host: proget.mattgerega.com
+      paths:
+      - pathType: Prefix
+        service:
+          port: http
+          identifier: main
+        path: /
+    enabled: true
 
