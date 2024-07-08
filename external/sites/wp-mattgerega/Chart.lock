@@ -1,6 +1,6 @@
 dependencies:
 - name: wordpress
   repository: https://charts.bitnami.com/bitnami
-  version: 22.4.17
-digest: sha256:e615f1f1b8f8a475d1c7ff064d7ae7f348d945eafdf423f07686479e05671a22
-generated: "2024-07-05T08:05:42.431410659Z"
+  version: 22.4.18
+digest: sha256:2217bca699d66133bc584c215eb633e16a3490478bca48ee0d163e297625cdc6
+generated: "2024-07-08T08:05:13.192818907Z"
