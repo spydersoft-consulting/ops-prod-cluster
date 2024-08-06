@@ -13,11 +13,11 @@ serviceMonitor:
     enabled: true
     serviceName: '{{ include "bjw-s.common.lib.chart.names.fullname" $ }}'
     endpoints:
-    - scheme: http
-      interval: 1m
-      path: /metrics
-      port: metrics
-      scrapeTimeout: 30s
+      - scheme: http
+        interval: 1m
+        path: /metrics
+        port: metrics
+        scrapeTimeout: 30s
 service:
   main:
     controller: main
@@ -36,8 +36,8 @@ controllers:
     containers:
       main:
         envFrom:
-        - secretRef:
-            name: unifi-poller
+          - secretRef:
+              name: unifi-poller
         probes:
           startup:
             spec:
@@ -79,4 +79,3 @@ controllers:
     type: deployment
     revisionHistoryLimit: 3
     replicas: 1
-

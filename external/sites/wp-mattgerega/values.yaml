@@ -5,11 +5,6 @@ wordpress:
 
   existingSecret: "wp-mg-secrets"
 
-  # livenessProbe:
-  #   httpGet:
-  #     httpHeaders:
-  #       - name: X-Forwarded-Proto
-  #         value: https
   readinessProbe:
     httpGet:
       httpHeaders:
@@ -17,13 +12,12 @@ wordpress:
           value: https
   service:
     type: ClusterIP
-    
+
   ingress:
     enabled: true
     ingressClassName: nginx
     hostname: www.mattgerega.com
-    annotations:
-      { nginx.ingress.kubernetes.io/proxy-body-size: 50M }
+    annotations: { nginx.ingress.kubernetes.io/proxy-body-size: 50M }
   persistence:
     enabled: true
     storageClass: "nfs-client"
