@@ -47,7 +47,7 @@ controllers:
           RUNAS_UID0: "false"
           TZ: America/New_York
           JVM_MAX_HEAP_SIZE: 1024M
-          JVM_INIT_HEAP_SIZE: 
+          JVM_INIT_HEAP_SIZE:
           UNIFI_STDOUT: "true"
           UNIFI_UID: "999"
     replicas: 1
@@ -63,13 +63,13 @@ ingress:
       nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
       nginx.ingress.kubernetes.io/backend-protocol: HTTPS
     hosts:
-    - host: unifi.mattgerega.com
-      paths:
-      - service:
-          port: http
-          identifier: main
-        pathType: Prefix
-        path: /
+      - host: unifi.mattgerega.com
+        paths:
+          - service:
+              port: http
+              identifier: main
+            pathType: Prefix
+            path: /
     enabled: true
 customCert:
   certSecret: mattgerega.com
@@ -82,8 +82,8 @@ persistence:
     storageClass: nfs-client
     accessMode: ReadWriteOnce
     globalMounts:
-    - path: /unifi
-      readOnly: false
+      - path: /unifi
+        readOnly: false
     size: 5Gi
     retain: true
 service:
@@ -168,4 +168,3 @@ service:
         enabled: true
         protocol: UDP
     primary: false
-

@@ -7,37 +7,37 @@ metadata:
     spydersoft.io/category: app-set
 spec:
   generators:
-  - git:
-      repoURL: https://github.com/spydersoft-consulting/ops-prod-cluster
-      revision: HEAD
-      directories:
-      - path: external/**/*
-      - path: external/apim/*
-        exclude: true
+    - git:
+        repoURL: https://github.com/spydersoft-consulting/ops-prod-cluster
+        revision: HEAD
+        directories:
+          - path: external/**/*
+          - path: external/apim/*
+            exclude: true
   template:
     metadata:
-      name: '{{path.basename}}'
+      name: "{{path.basename}}"
       labels:
         spydersoft.io/environment: production
-        spydersoft.io/category: '{{path[1]}}'
+        spydersoft.io/category: "{{path[1]}}"
     spec:
       project: external-apps
       source:
         helm:
           version: v3
           valueFiles:
-          - values.yaml
-        path: '{{ path }}'
+            - values.yaml
+        path: "{{ path }}"
         repoURL: https://github.com/spydersoft-consulting/ops-prod-cluster
         targetRevision: main
       destination:
         server: https://cp-production.gerega.net:6443
-        namespace: '{{path[1]}}'
+        namespace: "{{path[1]}}"
       ignoreDifferences:
-      - group: "*"
-        kind: "Deployment"
-        jsonPointers:
-        - /spec/template/annotations/kubectl.kubernetes.io~restartedAt
+        - group: "*"
+          kind: "Deployment"
+          jsonPointers:
+            - /spec/template/annotations/kubectl.kubernetes.io~restartedAt
       syncPolicy:
         syncOptions:
           - RespectIgnoreDifferences=true

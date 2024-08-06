@@ -7,30 +7,29 @@ metadata:
     spydersoft.io/category: app-set
 spec:
   generators:
-  - git:
-      repoURL: https://github.com/spydersoft-consulting/ops-prod-cluster
-      revision: HEAD
-      directories:
-      - path: apps/**/**/*
+    - git:
+        repoURL: https://github.com/spydersoft-consulting/ops-prod-cluster
+        revision: HEAD
+        directories:
+          - path: apps/**/**/*
   template:
     metadata:
-      name: '{{path.basename}}-{{path[2]}}'
+      name: "{{path.basename}}-{{path[2]}}"
       labels:
         spydersoft.io/environment: production
         spydersoft.io/category: app
     spec:
-      project: '{{ path[1] }}-apps'
+      project: "{{ path[1] }}-apps"
       source:
         repoURL: https://github.com/spydersoft-consulting/ops-prod-cluster
         targetRevision: main
-        path: '{{ path }}'
+        path: "{{ path }}"
         directory:
           recurse: true
       destination:
         server: https://cp-production.gerega.net:6443
-        namespace: '{{ path[2] }}'
+        namespace: "{{ path[2] }}"
       syncPolicy:
-        automated: 
-          #prune: true 
+        automated:
+          #prune: true
           selfHeal: true
-        

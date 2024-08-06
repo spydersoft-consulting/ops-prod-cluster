@@ -6,11 +6,11 @@ controllers:
     containers:
       main:
         env:
-          NODE_RED_ENABLE_SAFE_MODE: 
+          NODE_RED_ENABLE_SAFE_MODE:
           TZ: America/New_York
-          NODE_RED_ENABLE_PROJECTS: 
+          NODE_RED_ENABLE_PROJECTS:
           FLOWS: flows.json
-          NODE_OPTIONS: 
+          NODE_OPTIONS:
         probes:
           liveness:
             spec:
@@ -56,13 +56,13 @@ ingress:
       kubernetes.io/ingress.class: nginx
     className: nginx
     hosts:
-    - paths:
-      - pathType: Prefix
-        service:
-          identifier: main
-          port: http
-        path: /
-      host: nodered.mattgerega.net
+      - paths:
+          - pathType: Prefix
+            service:
+              identifier: main
+              port: http
+            path: /
+        host: nodered.mattgerega.net
 service:
   main:
     ports:
@@ -80,4 +80,3 @@ persistence:
     type: persistentVolumeClaim
     accessMode: ReadWriteMany
     size: 2Gi
-

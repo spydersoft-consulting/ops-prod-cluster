@@ -1,33 +1,33 @@
 apim3:
   jdbc:
-      url: kubernetes://apim/secrets/gravitee-apim-secret/jdbc-conn
-      driver: https://github.com/microsoft/mssql-jdbc/releases/download/v12.2.0/mssql-jdbc-12.2.0.jre11.jar
+    url: kubernetes://apim/secrets/gravitee-apim-secret/jdbc-conn
+    driver: https://github.com/microsoft/mssql-jdbc/releases/download/v12.2.0/mssql-jdbc-12.2.0.jre11.jar
   ui:
     ingress:
       enabled: true
       hosts:
-      - apim.mattgerega.com
+        - apim.mattgerega.com
   portal:
     ingress:
       enabled: true
       hosts:
-      - developer.mattgerega.com
+        - developer.mattgerega.com
   api:
     ingress:
       management:
         enabled: true
         hosts:
-        - apim.mattgerega.com
+          - apim.mattgerega.com
       portal:
         enabled: true
         hosts:
-        - apim.mattgerega.com
+          - apim.mattgerega.com
   gateway:
     ingress:
       enabled: true
       path: /
       hosts:
-      - apig.mattgerega.com
+        - apig.mattgerega.com
     ratelimit:
       redis:
         host: kubernetes://apim/secrets/gravitee-apim-secret/redis-host
@@ -45,6 +45,6 @@ apim3:
       username: kubernetes://apim/secrets/elastic-secret/ELASTIC_USERNAME
       password: kubernetes://apim/secrets/elastic-secret/ELASTIC_PASSWORD
     endpoints:
-    - http://apim-es-master-headless:9200
+      - http://apim-es-master-headless:9200
   mongo:
     rsEnabled: false
