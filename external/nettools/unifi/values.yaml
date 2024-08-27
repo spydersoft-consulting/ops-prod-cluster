@@ -1,165 +1,63 @@
-defaultPodOptions:
-  securityContext:
-    fsGroup: 999
 controllers:
   main:
     enabled: true
-    type: deployment
+    revisionHistoryLimit: 3
     containers:
       main:
-        probes:
-          liveness:
-            spec:
-              timeoutSeconds: 1
-              port: 8443
-              periodSeconds: 10
-              failureThreshold: 3
-              initialDelaySeconds: 0
-            type: TCP
-            enabled: true
-            custom: false
-          readiness:
-            spec:
-              timeoutSeconds: 1
-              port: 8443
-              periodSeconds: 10
-              failureThreshold: 3
-              initialDelaySeconds: 0
-            type: TCP
-            enabled: true
-            custom: false
-          startup:
-            spec:
-              timeoutSeconds: 1
-              port: 8443
-              periodSeconds: 5
-              failureThreshold: 30
-              initialDelaySeconds: 0
-            type: TCP
-            enabled: true
-            custom: false
-        image:
-          tag: v8.3.32
-          pullPolicy: IfNotPresent
-          repository: jacobalberty/unifi
         env:
           UNIFI_GID: "999"
+          UNIFI_UID: "999"
           RUNAS_UID0: "false"
           TZ: America/New_York
           JVM_MAX_HEAP_SIZE: 1024M
-          JVM_INIT_HEAP_SIZE:
           UNIFI_STDOUT: "true"
-          UNIFI_UID: "999"
+          JVM_INIT_HEAP_SIZE: 
+        image:
+          repository: jacobalberty/unifi
+          tag: v8.4.59
+          pullPolicy: IfNotPresent
+        probes:
+          readiness:
+            type: TCP
+            custom: false
+            spec:
+              timeoutSeconds: 1
+              initialDelaySeconds: 0
+              failureThreshold: 3
+              periodSeconds: 10
+              port: 8443
+            enabled: true
+          liveness:
+            type: TCP
+            custom: false
+            spec:
+              timeoutSeconds: 1
+              initialDelaySeconds: 0
+              failureThreshold: 3
+              periodSeconds: 10
+              port: 8443
+            enabled: true
+          startup:
+            type: TCP
+            custom: false
+            spec:
+              timeoutSeconds: 1
+              initialDelaySeconds: 0
+              failureThreshold: 30
+              periodSeconds: 5
+              port: 8443
+            enabled: true
     replicas: 1
     strategy: Recreate
-    revisionHistoryLimit: 3
-ingress:
-  main:
-    className: nginx
-    annotations:
-      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
-      nginx.ingress.kubernetes.io/proxy-body-size: 100M
-      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
-      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
-      nginx.ingress.kubernetes.io/backend-protocol: HTTPS
-    hosts:
-      - host: unifi.mattgerega.com
-        paths:
-          - service:
-              port: http
-              identifier: main
-            pathType: Prefix
-            path: /
-    enabled: true
-customCert:
-  certSecret: mattgerega.com
-  enabled: true
-  isChain: true
-persistence:
-  data:
-    enabled: true
-    type: persistentVolumeClaim
-    storageClass: nfs-client
-    accessMode: ReadWriteOnce
-    globalMounts:
-      - path: /unifi
-        readOnly: false
-    size: 5Gi
-    retain: true
+    type: deployment
+defaultPodOptions:
+  securityContext:
+    fsGroup: 999
 service:
-  main:
-    enabled: true
-    type: ClusterIP
-    controller: main
-    ports:
-      discovery:
-        port: 10001
-        enabled: false
-        protocol: UDP
-      portal-https:
-        port: 8843
-        enabled: false
-        protocol: HTTPS
-      speedtest:
-        port: 6789
-        enabled: true
-        protocol: TCP
-      controller:
-        port: 8080
-        enabled: false
-        protocol: TCP
-      stun:
-        port: 3478
-        enabled: false
-        protocol: UDP
-      syslog:
-        port: 5514
-        enabled: false
-        protocol: UDP
-      http:
-        port: 8443
-        protocol: HTTPS
-      portal-http:
-        port: 8880
-        enabled: false
-        protocol: HTTP
-    primary: true
-  controller:
-    enabled: true
-    type: NodePort
-    controller: main
-    ports:
-      npcontroller:
-        port: 8080
-        nodePort: 30080
-        enabled: true
-        protocol: TCP
-    primary: false
-  stun:
-    enabled: true
-    type: NodePort
-    controller: main
-    ports:
-      stun:
-        port: 3478
-        nodePort: 30478
-        enabled: true
-        protocol: UDP
-    primary: false
-  syslog:
-    enabled: true
-    type: NodePort
-    controller: main
-    ports:
-      syslog:
-        port: 5514
-        nodePort: 32514
-        enabled: true
-        protocol: UDP
-    primary: false
   discovery:
     enabled: true
     type: NodePort
+    primary: false
     controller: main
     ports:
       discovery:
@@ -167,4 +65,107 @@ service:
         nodePort: 30001
         enabled: true
         protocol: UDP
+  syslog:
+    enabled: true
+    type: NodePort
     primary: false
+    controller: main
+    ports:
+      syslog:
+        port: 5514
+        nodePort: 32514
+        enabled: true
+        protocol: UDP
+  stun:
+    enabled: true
+    type: NodePort
+    primary: false
+    controller: main
+    ports:
+      stun:
+        port: 3478
+        nodePort: 30478
+        enabled: true
+        protocol: UDP
+  controller:
+    enabled: true
+    type: NodePort
+    primary: false
+    controller: main
+    ports:
+      npcontroller:
+        port: 8080
+        nodePort: 30080
+        enabled: true
+        protocol: TCP
+  main:
+    enabled: true
+    type: ClusterIP
+    primary: true
+    controller: main
+    ports:
+      discovery:
+        port: 10001
+        enabled: false
+        protocol: UDP
+      speedtest:
+        port: 6789
+        enabled: true
+        protocol: TCP
+      stun:
+        port: 3478
+        enabled: false
+        protocol: UDP
+      http:
+        port: 8443
+        protocol: HTTPS
+      controller:
+        port: 8080
+        enabled: false
+        protocol: TCP
+      portal-https:
+        port: 8843
+        enabled: false
+        protocol: HTTPS
+      portal-http:
+        port: 8880
+        enabled: false
+        protocol: HTTP
+      syslog:
+        port: 5514
+        enabled: false
+        protocol: UDP
+persistence:
+  data:
+    enabled: true
+    globalMounts:
+    - readOnly: false
+      path: /unifi
+    accessMode: ReadWriteOnce
+    retain: true
+    size: 5Gi
+    storageClass: nfs-client
+    type: persistentVolumeClaim
+ingress:
+  main:
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-body-size: 100M
+      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
+      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
+    className: nginx
+    hosts:
+    - host: unifi.mattgerega.com
+      paths:
+      - path: /
+        pathType: Prefix
+        service:
+          port: http
+          identifier: main
+    enabled: true
+customCert:
+  certSecret: mattgerega.com
+  enabled: true
+  isChain: true
+
