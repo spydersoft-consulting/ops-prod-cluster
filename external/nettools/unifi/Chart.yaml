@@ -1,11 +1,11 @@
-version: 3.5.0
-name: unifi
+dependencies:
+- version: 3.5.1
+  repository: https://bjw-s.github.io/helm-charts
+  name: common
+appVersion: v7.5.176
 type: application
 apiVersion: v2
-dependencies:
-- name: common
-  repository: https://bjw-s.github.io/helm-charts
-  version: 3.5.0
-appVersion: v7.5.176
+name: unifi
+version: 3.5.1
 
 
