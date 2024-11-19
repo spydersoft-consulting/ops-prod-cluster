@@ -14,7 +14,7 @@ spec:
           - path: external/**/*
           - path: external/apim/*
             exclude: true
-          - path: external/opstools/proget/*
+          - path: external/opstools/*
             exclude: true
   template:
     metadata:
