@@ -1,83 +1,83 @@
 ingress:
   main:
+    hosts:
+    - paths:
+      - path: /
+        service:
+          port: http
+          identifier: main
+        pathType: Prefix
+      host: nodered.mattgerega.net
+    className: nginx
     annotations:
       kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/rewrite-target: /
       nginx.ingress.kubernetes.io/proxy-body-size: 500M
-    hosts:
-    - host: nodered.mattgerega.net
-      paths:
-      - path: /
-        pathType: Prefix
-        service:
-          identifier: main
-          port: http
-    className: nginx
+      nginx.ingress.kubernetes.io/rewrite-target: /
     enabled: true
-persistence:
-  data:
-    size: 2Gi
-    storageClass: nfs-client
-    type: persistentVolumeClaim
-    accessMode: ReadWriteMany
-    enabled: true
+service:
+  main:
+    primary: true
+    type: ClusterIP
+    ports:
+      http:
+        enabled: true
+        port: 1880
+        primary: true
+    controller: main
 controllers:
   main:
+    replicas: 1
     revisionHistoryLimit: 3
     type: deployment
-    strategy: Recreate
-    replicas: 1
     enabled: true
+    strategy: Recreate
     containers:
       main:
         env:
-          NODE_OPTIONS: 
-          NODE_RED_ENABLE_SAFE_MODE: 
-          FLOWS: flows.json
-          NODE_RED_ENABLE_PROJECTS: 
           TZ: America/New_York
+          NODE_RED_ENABLE_PROJECTS: 
+          NODE_OPTIONS: 
+          FLOWS: flows.json
+          NODE_RED_ENABLE_SAFE_MODE: 
         strategy:
           type: Recreate
+        image:
+          tag: 4.0.7
+          pullPolicy: IfNotPresent
+          repository: nodered/node-red
         probes:
           startup:
-            type: TCP
+            enabled: true
             spec:
               timeoutSeconds: 1
-              failureThreshold: 30
-              initialDelaySeconds: 0
               periodSeconds: 5
-            custom: false
-            enabled: true
-          liveness:
-            type: TCP
-            spec:
-              timeoutSeconds: 1
-              failureThreshold: 3
               initialDelaySeconds: 0
-              periodSeconds: 10
+              failureThreshold: 30
+            type: TCP
             custom: false
-            enabled: true
           readiness:
-            type: TCP
+            enabled: true
             spec:
               timeoutSeconds: 1
-              failureThreshold: 3
-              initialDelaySeconds: 0
               periodSeconds: 10
+              initialDelaySeconds: 0
+              failureThreshold: 3
+            type: TCP
             custom: false
+          liveness:
             enabled: true
-        image:
-          repository: nodered/node-red
-          tag: 4.0.6
-          pullPolicy: IfNotPresent
-service:
-  main:
-    type: ClusterIP
-    controller: main
-    primary: true
-    ports:
-      http:
-        primary: true
-        port: 1880
-        enabled: true
+            spec:
+              timeoutSeconds: 1
+              periodSeconds: 10
+              initialDelaySeconds: 0
+              failureThreshold: 3
+            type: TCP
+            custom: false
+persistence:
+  data:
+    enabled: true
+    size: 2Gi
+    accessMode: ReadWriteMany
+    type: persistentVolumeClaim
+    storageClass: nfs-client
 
