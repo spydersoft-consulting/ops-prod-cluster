@@ -28,10 +28,10 @@ wordpress:
       interval: "1m"
       scrapeTimeout: "30s"
   mariadb:
-    resourcesPreset: small
     auth:
       existingSecret: "wp-mg-dbsecrets"
     primary:
+      resourcesPreset: small
       livenessProbe:
         initialDelaySeconds: 600
       readinessProbe:
