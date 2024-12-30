@@ -40,6 +40,7 @@ spec:
           kind: "Deployment"
           jsonPointers:
             - /spec/template/annotations/kubectl.kubernetes.io~restartedAt
+            - .spec.template.spec.hostUsers
       syncPolicy:
         syncOptions:
           - RespectIgnoreDifferences=true
