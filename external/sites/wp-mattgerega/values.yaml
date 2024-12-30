@@ -2,7 +2,7 @@ wordpress:
   wordpressUsername: admin
   wordpressScheme: https
   allowEmptyPassword: false
-
+  resourcesPreset: small
   existingSecret: "wp-mg-secrets"
 
   readinessProbe:
@@ -28,6 +28,7 @@ wordpress:
       interval: "1m"
       scrapeTimeout: "30s"
   mariadb:
+    resourcesPreset: small
     auth:
       existingSecret: "wp-mg-dbsecrets"
     primary:
