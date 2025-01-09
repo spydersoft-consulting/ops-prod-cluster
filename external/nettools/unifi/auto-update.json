@@ -1,5 +1,0 @@
-{
-    "repository": "jacobalberty/unifi-docker",
-    "stripVFromVersion": false,
-    "tagPath": "controllers.main.containers.main.image.tag"
-}
