@@ -14,7 +14,7 @@ data:
   DnsService__DefaultZone: gerega.net
   DnsService__Url: http://dc2203.ad.mattgerega.net:5000
   Identity__ApiName: unifi.ipmanager
-  UnifiControllerOptions__Url: https://unifi.mattgerega.com
+  UnifiControllerOptions__Url: https://unifi.gerega.net
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: v1
@@ -66,7 +66,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 67af122c679f7cacd46eb347d3034569e366b80d6f66a9fcecb2a1fd0dc73c78
+        checksum/configMaps: 8e4ff9faee17e34ae7c373994c5974f3031502cb396c524b2ec613318d377158
       labels: 
         app.kubernetes.io/component: main
         app.kubernetes.io/instance: unifi-ipmanager
@@ -89,7 +89,7 @@ spec:
               name: unifi-ipmanager-ipmanager
           - secretRef:
               name: unifi-secrets
-          image: ghcr.io/spyder007/unifi-ipmanager:1.1.51
+          image: ghcr.io/spyder007/unifi-ipmanager:1.1.1-106
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
