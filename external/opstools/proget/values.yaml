@@ -1,86 +1,86 @@
 persistence:
   packages:
-    type: persistentVolumeClaim
     enabled: true
-    existingClaim: progetdata-claim
     globalMounts:
     - readOnly: false
       path: /var/proget/packages
+    existingClaim: progetdata-claim
     emptyDir:
       enabled: false
+    type: persistentVolumeClaim
 controllers:
   main:
-    type: deployment
+    strategy: Recreate
+    enabled: true
     replicas: 1
     revisionHistoryLimit: 3
     containers:
       main:
-        image:
-          pullPolicy: IfNotPresent
-          tag: 24.0.24
-          repository: proget.inedo.com/productimages/inedo/proget
         envFrom:
         - secretRef:
             name: proget-secrets
-        probes:
-          readiness:
-            spec:
-              initialDelaySeconds: 0
-              failureThreshold: 3
-              timeoutSeconds: 1
-              periodSeconds: 10
-            custom: false
-            type: TCP
-            enabled: true
-          liveness:
-            spec:
-              initialDelaySeconds: 0
-              failureThreshold: 3
-              timeoutSeconds: 1
-              periodSeconds: 10
-            custom: false
-            type: TCP
-            enabled: true
-          startup:
-            spec:
-              initialDelaySeconds: 0
-              failureThreshold: 30
-              timeoutSeconds: 1
-              periodSeconds: 5
-            custom: false
-            type: TCP
-            enabled: true
         strategy:
           type: Recreate
-    enabled: true
-    strategy: Recreate
+        probes:
+          readiness:
+            custom: false
+            spec:
+              failureThreshold: 3
+              initialDelaySeconds: 0
+              timeoutSeconds: 1
+              periodSeconds: 10
+            enabled: true
+            type: TCP
+          startup:
+            custom: false
+            spec:
+              failureThreshold: 30
+              initialDelaySeconds: 0
+              timeoutSeconds: 1
+              periodSeconds: 5
+            enabled: true
+            type: TCP
+          liveness:
+            custom: false
+            spec:
+              failureThreshold: 3
+              initialDelaySeconds: 0
+              timeoutSeconds: 1
+              periodSeconds: 10
+            enabled: true
+            type: TCP
+        image:
+          tag: 24.0.25
+          pullPolicy: IfNotPresent
+          repository: proget.inedo.com/productimages/inedo/proget
+    type: deployment
 ingress:
   main:
     hosts:
-    - paths:
-      - path: /
-        pathType: Prefix
-        service:
-          identifier: main
+    - host: proget.mattgerega.com
+      paths:
+      - service:
           port: http
-      host: proget.mattgerega.com
-    className: nginx
+          identifier: main
+        path: /
+        pathType: Prefix
     annotations:
-      nginx.ingress.kubernetes.io/proxy-body-size: 500M
       nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
-      nginx.ingress.kubernetes.io/rewrite-target: /
       nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/proxy-body-size: 500M
     enabled: true
+    className: nginx
 service:
   main:
-    primary: true
+    controller: main
     ports:
       http:
-        primary: true
         port: 80
+        primary: true
         enabled: true
+    primary: true
     type: ClusterIP
-    controller: main
 
