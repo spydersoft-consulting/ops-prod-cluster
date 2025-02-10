@@ -1,11 +1,11 @@
-version: 3.6.1
-description: Proget Helm Chart - Server only, no database
 apiVersion: v2
-appVersion: 23.0.22
 name: proget
+description: Proget Helm Chart - Server only, no database
+version: 3.7.0
+appVersion: 23.0.22
 dependencies:
-- version: 3.6.1
-  name: common
+- name: common
+  version: 3.7.0
   repository: https://bjw-s.github.io/helm-charts
 type: application
 
