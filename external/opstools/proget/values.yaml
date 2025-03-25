@@ -1,86 +1,86 @@
+service:
+  main:
+    ports:
+      http:
+        enabled: true
+        port: 80
+        primary: true
+    primary: true
+    controller: main
+    type: ClusterIP
 ingress:
   main:
-    className: nginx
     annotations:
-      nginx.ingress.kubernetes.io/proxy-body-size: 500M
-      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
       nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
-      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-body-size: 500M
+      nginx.ingress.kubernetes.io/rewrite-target: /
+    enabled: true
     hosts:
-    - host: proget.mattgerega.com
-      paths:
-      - pathType: Prefix
-        path: /
-        service:
+    - paths:
+      - service:
           identifier: main
           port: http
-    enabled: true
+        pathType: Prefix
+        path: /
+      host: proget.mattgerega.com
+    className: nginx
 persistence:
   packages:
     existingClaim: progetdata-claim
-    emptyDir:
-      enabled: false
     globalMounts:
     - readOnly: false
       path: /var/proget/packages
     enabled: true
+    emptyDir:
+      enabled: false
     type: persistentVolumeClaim
-service:
-  main:
-    controller: main
-    primary: true
-    ports:
-      http:
-        primary: true
-        port: 80
-        enabled: true
-    type: ClusterIP
 controllers:
   main:
-    revisionHistoryLimit: 3
     enabled: true
-    type: deployment
-    strategy: Recreate
-    replicas: 1
     containers:
       main:
+        image:
+          pullPolicy: IfNotPresent
+          tag: 24.0.31
+          repository: proget.inedo.com/productimages/inedo/proget
         strategy:
           type: Recreate
         envFrom:
         - secretRef:
             name: proget-secrets
-        image:
-          repository: proget.inedo.com/productimages/inedo/proget
-          pullPolicy: IfNotPresent
-          tag: 24.0.30
         probes:
-          startup:
-            spec:
-              failureThreshold: 30
-              initialDelaySeconds: 0
-              timeoutSeconds: 1
-              periodSeconds: 5
-            custom: false
-            enabled: true
-            type: TCP
           readiness:
             spec:
-              failureThreshold: 3
-              initialDelaySeconds: 0
-              timeoutSeconds: 1
               periodSeconds: 10
-            custom: false
+              initialDelaySeconds: 0
+              failureThreshold: 3
+              timeoutSeconds: 1
             enabled: true
+            custom: false
             type: TCP
           liveness:
             spec:
-              failureThreshold: 3
-              initialDelaySeconds: 0
-              timeoutSeconds: 1
               periodSeconds: 10
-            custom: false
+              initialDelaySeconds: 0
+              failureThreshold: 3
+              timeoutSeconds: 1
             enabled: true
+            custom: false
             type: TCP
+          startup:
+            spec:
+              periodSeconds: 5
+              initialDelaySeconds: 0
+              failureThreshold: 30
+              timeoutSeconds: 1
+            enabled: true
+            custom: false
+            type: TCP
+    strategy: Recreate
+    revisionHistoryLimit: 3
+    replicas: 1
+    type: deployment
 
