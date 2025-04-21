@@ -1,23 +1,3 @@
-persistence:
-  packages:
-    type: persistentVolumeClaim
-    enabled: true
-    existingClaim: progetdata-claim
-    emptyDir:
-      enabled: false
-    globalMounts:
-    - path: /var/proget/packages
-      readOnly: false
-service:
-  main:
-    controller: main
-    type: ClusterIP
-    primary: true
-    ports:
-      http:
-        enabled: true
-        primary: true
-        port: 80
 ingress:
   main:
     hosts:
@@ -25,62 +5,82 @@ ingress:
       paths:
       - path: /
         service:
-          port: http
           identifier: main
+          port: http
         pathType: Prefix
+    enabled: true
     annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
-      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
-      nginx.ingress.kubernetes.io/proxy-body-size: 500M
       nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
-    enabled: true
+      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/proxy-body-size: 500M
     className: nginx
+service:
+  main:
+    primary: true
+    controller: main
+    type: ClusterIP
+    ports:
+      http:
+        enabled: true
+        primary: true
+        port: 80
+persistence:
+  packages:
+    type: persistentVolumeClaim
+    existingClaim: progetdata-claim
+    emptyDir:
+      enabled: false
+    globalMounts:
+    - path: /var/proget/packages
+      readOnly: false
+    enabled: true
 controllers:
   main:
-    strategy: Recreate
-    replicas: 1
     type: deployment
+    revisionHistoryLimit: 3
+    replicas: 1
+    enabled: true
+    strategy: Recreate
     containers:
       main:
-        probes:
-          readiness:
-            type: TCP
-            enabled: true
-            spec:
-              timeoutSeconds: 1
-              periodSeconds: 10
-              failureThreshold: 3
-              initialDelaySeconds: 0
-            custom: false
-          startup:
-            type: TCP
-            enabled: true
-            spec:
-              timeoutSeconds: 1
-              periodSeconds: 5
-              failureThreshold: 30
-              initialDelaySeconds: 0
-            custom: false
-          liveness:
-            type: TCP
-            enabled: true
-            spec:
-              timeoutSeconds: 1
-              periodSeconds: 10
-              failureThreshold: 3
-              initialDelaySeconds: 0
-            custom: false
-        strategy:
-          type: Recreate
-        image:
-          tag: 24.0.32
-          pullPolicy: IfNotPresent
-          repository: proget.inedo.com/productimages/inedo/proget
         envFrom:
         - secretRef:
             name: proget-secrets
-    enabled: true
-    revisionHistoryLimit: 3
+        strategy:
+          type: Recreate
+        image:
+          pullPolicy: IfNotPresent
+          tag: 24.0.33
+          repository: proget.inedo.com/productimages/inedo/proget
+        probes:
+          liveness:
+            enabled: true
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              failureThreshold: 3
+              timeoutSeconds: 1
+            type: TCP
+            custom: false
+          readiness:
+            enabled: true
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              failureThreshold: 3
+              timeoutSeconds: 1
+            type: TCP
+            custom: false
+          startup:
+            enabled: true
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 5
+              failureThreshold: 30
+              timeoutSeconds: 1
+            type: TCP
+            custom: false
 
