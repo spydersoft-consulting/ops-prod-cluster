@@ -7,6 +7,6 @@ description: Node Red Helm Chart
 dependencies:
 - version: 3.7.3
   name: common
-  repository: https://github.com/bjw-s/helm-charts
+  repository: https://bjw-s-labs.github.io/helm-charts
 
 
