@@ -2,7 +2,7 @@ version: 3.7.3
 description: Proget Helm Chart - Server only, no database
 dependencies:
 - version: 3.7.3
-  repository: https://github.com/bjw-s/helm-charts
+  repository: https://bjw-s-labs.github.io/helm-charts
   name: common
 apiVersion: v2
 name: proget
