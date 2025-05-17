@@ -1,86 +1,86 @@
-ingress:
-  main:
-    className: nginx
-    annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /
-      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
-      nginx.ingress.kubernetes.io/proxy-body-size: 500M
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
-      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
-    hosts:
-    - host: proget.mattgerega.com
-      paths:
-      - service:
-          identifier: main
-          port: http
-        path: /
-        pathType: Prefix
-    enabled: true
-persistence:
-  packages:
-    enabled: true
-    existingClaim: progetdata-claim
-    globalMounts:
-    - path: /var/proget/packages
-      readOnly: false
-    emptyDir:
-      enabled: false
-    type: persistentVolumeClaim
-controllers:
-  main:
-    containers:
-      main:
-        envFrom:
-        - secretRef:
-            name: proget-secrets
-        image:
-          pullPolicy: IfNotPresent
-          tag: 24.0.35
-          repository: proget.inedo.com/productimages/inedo/proget
-        probes:
-          readiness:
-            custom: false
-            spec:
-              periodSeconds: 10
-              initialDelaySeconds: 0
-              timeoutSeconds: 1
-              failureThreshold: 3
-            type: TCP
-            enabled: true
-          liveness:
-            custom: false
-            spec:
-              periodSeconds: 10
-              initialDelaySeconds: 0
-              timeoutSeconds: 1
-              failureThreshold: 3
-            type: TCP
-            enabled: true
-          startup:
-            custom: false
-            spec:
-              periodSeconds: 5
-              initialDelaySeconds: 0
-              timeoutSeconds: 1
-              failureThreshold: 30
-            type: TCP
-            enabled: true
-        strategy:
-          type: Recreate
-    enabled: true
-    revisionHistoryLimit: 3
-    strategy: Recreate
-    replicas: 1
-    type: deployment
 service:
   main:
     ports:
       http:
+        enabled: true
         port: 80
         primary: true
-        enabled: true
+    controller: main
     type: ClusterIP
     primary: true
-    controller: main
+ingress:
+  main:
+    hosts:
+    - host: proget.mattgerega.com
+      paths:
+      - pathType: Prefix
+        path: /
+        service:
+          identifier: main
+          port: http
+    className: nginx
+    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: 500M
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
+controllers:
+  main:
+    enabled: true
+    type: deployment
+    containers:
+      main:
+        image:
+          pullPolicy: IfNotPresent
+          tag: 24.0.36
+          repository: proget.inedo.com/productimages/inedo/proget
+        strategy:
+          type: Recreate
+        envFrom:
+        - secretRef:
+            name: proget-secrets
+        probes:
+          liveness:
+            enabled: true
+            custom: false
+            type: TCP
+            spec:
+              failureThreshold: 3
+              initialDelaySeconds: 0
+              timeoutSeconds: 1
+              periodSeconds: 10
+          startup:
+            enabled: true
+            custom: false
+            type: TCP
+            spec:
+              failureThreshold: 30
+              initialDelaySeconds: 0
+              timeoutSeconds: 1
+              periodSeconds: 5
+          readiness:
+            enabled: true
+            custom: false
+            type: TCP
+            spec:
+              failureThreshold: 3
+              initialDelaySeconds: 0
+              timeoutSeconds: 1
+              periodSeconds: 10
+    strategy: Recreate
+    revisionHistoryLimit: 3
+    replicas: 1
+persistence:
+  packages:
+    enabled: true
+    globalMounts:
+    - readOnly: false
+      path: /var/proget/packages
+    type: persistentVolumeClaim
+    emptyDir:
+      enabled: false
+    existingClaim: progetdata-claim
 
