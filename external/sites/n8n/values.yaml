@@ -140,6 +140,8 @@ controllers:
             value: 5432
           - name: POSTGRES_HOST
             value: postgres-service
+          - name: POSTGRES_DB
+            value: n8n
         envFrom:
         - secretRef:
             name: postgres-secrets
