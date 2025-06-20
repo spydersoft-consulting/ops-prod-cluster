@@ -175,7 +175,7 @@ controllers:
         #     type: TCP
         image:
           pullPolicy: IfNotPresent
-          repository: n8nio/postgres
+          repository: postgres
           tag: 17
     strategy: Recreate
     type: deployment
