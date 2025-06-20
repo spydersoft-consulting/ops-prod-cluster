@@ -126,7 +126,7 @@ controllers:
           tag: 1.36
         command: ["sh", "-c", "chown 1000:1000 /home/node/.n8n"]
         volumeMounts:
-          - name: n8ndata
+          - name: "{{ .Release.Name }}-data"
             mountPath: /home/node/.n8n
   postgres:
     revisionHistoryLimit: 3
