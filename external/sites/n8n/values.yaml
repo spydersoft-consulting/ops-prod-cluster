@@ -61,7 +61,6 @@ controllers:
     containers:
       main:
         env:
-
           - name: DB_TYPE
             value: postgresdb
           - name: DB_POSTGRESDB_HOST
@@ -177,7 +176,7 @@ controllers:
         image:
           pullPolicy: IfNotPresent
           repository: n8nio/postgres
-          tag: 11
+          tag: 17
     strategy: Recreate
     type: deployment
     replicas: 1
