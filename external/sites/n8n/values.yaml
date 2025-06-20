@@ -182,7 +182,7 @@ controllers:
     type: deployment
     replicas: 1
 persistence:
-  n8n-data:
+  data:
     size: 2Gi
     enabled: true
     accessMode: ReadWriteMany
@@ -203,7 +203,7 @@ persistence:
         main:
           - path: /var/lib/postgresql/data
   postgres-init-data:
-    name: postgres-init-data
+    identifier: postgres-init-data
     enabled: true
     accessMode: ReadOnly
     type: configMap
