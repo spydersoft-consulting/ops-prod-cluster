@@ -115,7 +115,7 @@ controllers:
         image:
           pullPolicy: IfNotPresent
           repository: n8nio/n8n
-          tag: 4.0.9
+          tag: 1.99.1
     strategy: Recreate
     type: deployment
     replicas: 1
