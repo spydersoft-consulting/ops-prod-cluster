@@ -21,7 +21,7 @@ configMaps:
   n8n:
     enabled: true
     data:
-      N8N_PROTOCOL: http
+      N8N_PROTOCOL: "http"
       N8N_PORT: 5678
   postgres-init-data:
     enabled: true
