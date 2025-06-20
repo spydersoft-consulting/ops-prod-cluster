@@ -81,7 +81,7 @@ controllers:
                 key: POSTGRES_NON_ROOT_PASSWORD
         envFrom:
           - configMapRef:
-              name: "{{ .Release.Name }}-n8n"
+              name: "{{ .Release.Name }}"
         strategy:
           type: Recreate
         probes:
