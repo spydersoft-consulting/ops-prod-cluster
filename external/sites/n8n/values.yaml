@@ -24,20 +24,20 @@ configMaps:
       N8N_PROTOCOL: "http"
       N8N_PORT: "5678"
       N8N_RUNNERS_ENABLED: "true"
-  postgres-init-data:
-    enabled: true
-    data:
-      init-data.sh: |-
-        #!/bin/bash
-        set -e;
-        if [ -n "${POSTGRES_NON_ROOT_USER:-}" ] && [ -n "${POSTGRES_NON_ROOT_PASSWORD:-}" ]; then
-          psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-            CREATE USER "${POSTGRES_NON_ROOT_USER}" WITH PASSWORD '${POSTGRES_NON_ROOT_PASSWORD}';
-            GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO "${POSTGRES_NON_ROOT_USER}";
-        EOSQL
-        else
-          echo "SETUP INFO: No Environment variables given!"
-        fi
+  # postgres-init-data:
+  #   enabled: true
+  #   data:
+  #     init-data.sh: |-
+  #       #!/bin/bash
+  #       set -e;
+  #       if [ -n "${POSTGRES_NON_ROOT_USER:-}" ] && [ -n "${POSTGRES_NON_ROOT_PASSWORD:-}" ]; then
+  #         psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+  #           CREATE USER "${POSTGRES_NON_ROOT_USER}" WITH PASSWORD '${POSTGRES_NON_ROOT_PASSWORD}';
+  #           GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO "${POSTGRES_NON_ROOT_USER}";
+  #       EOSQL
+  #       else
+  #         echo "SETUP INFO: No Environment variables given!"
+  #       fi
 
 ingress:
   main:
@@ -208,16 +208,16 @@ persistence:
           - path: /var/lib/postgresql/data
         
           
-  postgres-init-data:
-    identifier: postgres-init-data
-    enabled: true
-    accessMode: ReadOnly
-    type: configMap
-    advancedMounts:
-      postgres:
-        main:
-          - path: /docker-entrypoint-initdb.d/init-n8n-user.sh
-            subPath: init-data.sh
+  # postgres-init-data:
+  #   identifier: postgres-init-data
+  #   enabled: true
+  #   accessMode: ReadOnly
+  #   type: configMap
+  #   advancedMounts:
+  #     postgres:
+  #       main:
+  #         - path: /docker-entrypoint-initdb.d/init-n8n-user.sh
+  #           subPath: init-data.sh
   postgres-secrets:
     name: postgres-secrets
     enabled: true
