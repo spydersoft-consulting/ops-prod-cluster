@@ -191,6 +191,8 @@ persistence:
       main:
         main:
           - path: /home/node/.n8n
+        volume-permissions:
+          - path: /home/node/.n8n
   postgres-data:
     size: 300Gi
     enabled: true
@@ -201,6 +203,8 @@ persistence:
       postgres:
         main:
           - path: /var/lib/postgresql/data
+        
+          
   postgres-init-data:
     identifier: postgres-init-data
     enabled: true
