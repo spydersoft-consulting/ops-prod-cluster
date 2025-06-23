@@ -1,5 +1,5 @@
 {
     "repository": "node-red/node-red-docker",
-    "stripVFromVersion": true,
+    "imagePrefix": "v",
     "tagPath": "controllers.main.containers.main.image.tag"
 }

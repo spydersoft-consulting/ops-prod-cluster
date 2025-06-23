@@ -1,7 +1,7 @@
 {
     "repository": "productimages/inedo/proget",
     "registryUrl": "https://proget.inedo.com/v2",
-    "stripVFromVersion": true,
+    "imagePrefix": "v",
     "tagPath": "controllers.main.containers.main.image.tag",
     "type": "docker"
 }
