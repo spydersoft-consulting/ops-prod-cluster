@@ -1,11 +1,11 @@
 type: application
-name: wp-mattgerega
 dependencies:
-- version: 24.2.10
+- name: wordpress
+  version: 24.2.11
   repository: https://charts.bitnami.com/bitnami
-  name: wordpress
-appVersion: 6.0.2
 apiVersion: v2
-version: 24.2.10
+appVersion: 6.0.2
+version: 24.2.11
+name: wp-mattgerega
 
 
