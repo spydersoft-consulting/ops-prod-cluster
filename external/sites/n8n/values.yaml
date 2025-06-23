@@ -117,7 +117,7 @@ controllers:
               name: postgres-secrets
               key: POSTGRES_NON_ROOT_PASSWORD
         image:
-          tag: 1.94.0
+          tag: 1.99.1
           pullPolicy: IfNotPresent
           repository: n8nio/n8n
     enabled: true
