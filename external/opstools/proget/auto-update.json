@@ -1,7 +1,11 @@
 {
-    "repository": "productimages/inedo/proget",
-    "registryUrl": "https://proget.inedo.com/v2",
-    "imagePrefix": "v",
-    "tagPath": "controllers.main.containers.main.image.tag",
-    "type": "docker"
+    "repositories": [
+        {
+            "repository": "productimages/inedo/proget",
+            "registryUrl": "https://proget.inedo.com/v2",
+            "imagePrefix": "v",
+            "tagPath": "controllers.main.containers.main.image.tag",
+            "type": "docker"
+        }
+    ]
 }
