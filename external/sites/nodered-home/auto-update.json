@@ -1,5 +1,9 @@
 {
-    "repository": "node-red/node-red-docker",
-    "imagePrefix": "v",
-    "tagPath": "controllers.main.containers.main.image.tag"
+    "repositories": [
+        {
+            "repository": "node-red/node-red-docker",
+            "imagePrefix": "v",
+            "tagPath": "controllers.main.containers.main.image.tag"
+        }
+    ]
 }

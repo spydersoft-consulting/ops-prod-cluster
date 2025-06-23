@@ -1,5 +1,9 @@
 {
-    "repository": "n8n-io/n8n",
-    "imagePrefix": "n8n@",
-    "tagPath": "controllers.main.containers.main.image.tag"
+    "repositories": [
+        {
+            "repository": "n8n-io/n8n",
+            "imagePrefix": "n8n@",
+            "tagPath": "controllers.main.containers.main.image.tag"
+        }
+    ]
 }
