@@ -135,8 +135,6 @@ controllers:
     containers:
       main:
         env:
-          - name: PGDATA
-            value: http
           - name: POSTGRES_PORT
             value: 5432
           - name: POSTGRES_HOST
