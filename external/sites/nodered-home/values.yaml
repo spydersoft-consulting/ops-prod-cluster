@@ -1,13 +1,19 @@
-service:
+ingress:
   main:
-    type: ClusterIP
-    controller: main
-    primary: true
-    ports:
-      http:
-        enabled: true
-        port: 1880
-        primary: true
+    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: 500M
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      kubernetes.io/ingress.class: nginx
+    hosts:
+    - paths:
+      - pathType: Prefix
+        path: /
+        service:
+          port: http
+          identifier: main
+      host: nodered.mattgerega.net
+    className: nginx
 persistence:
   data:
     storageClass: nfs-client
@@ -17,67 +23,61 @@ persistence:
     size: 2Gi
 controllers:
   main:
-    strategy: Recreate
-    enabled: true
-    replicas: 1
-    type: deployment
+    revisionHistoryLimit: 3
     containers:
       main:
-        strategy:
-          type: Recreate
-        env:
-          FLOWS: flows.json
-          NODE_OPTIONS: 
-          NODE_RED_ENABLE_SAFE_MODE: 
-          NODE_RED_ENABLE_PROJECTS: 
-          TZ: America/New_York
+        image:
+          pullPolicy: IfNotPresent
+          tag: 4.1.0
+          repository: nodered/node-red
         probes:
-          readiness:
-            custom: false
-            type: TCP
-            spec:
-              failureThreshold: 3
-              periodSeconds: 10
-              timeoutSeconds: 1
-              initialDelaySeconds: 0
-            enabled: true
           liveness:
+            enabled: true
             custom: false
-            type: TCP
             spec:
-              failureThreshold: 3
+              initialDelaySeconds: 0
               periodSeconds: 10
               timeoutSeconds: 1
-              initialDelaySeconds: 0
-            enabled: true
-          startup:
-            custom: false
+              failureThreshold: 3
             type: TCP
+          readiness:
+            enabled: true
+            custom: false
             spec:
-              failureThreshold: 30
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+            type: TCP
+          startup:
+            enabled: true
+            custom: false
+            spec:
+              initialDelaySeconds: 0
               periodSeconds: 5
               timeoutSeconds: 1
-              initialDelaySeconds: 0
-            enabled: true
-        image:
-          tag: 4.1.0-beta.2
-          repository: nodered/node-red
-          pullPolicy: IfNotPresent
-    revisionHistoryLimit: 3
-ingress:
-  main:
+              failureThreshold: 30
+            type: TCP
+        env:
+          NODE_RED_ENABLE_PROJECTS: 
+          NODE_RED_ENABLE_SAFE_MODE: 
+          NODE_OPTIONS: 
+          FLOWS: flows.json
+          TZ: America/New_York
+        strategy:
+          type: Recreate
+    type: deployment
     enabled: true
-    annotations:
-      nginx.ingress.kubernetes.io/proxy-body-size: 500M
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/rewrite-target: /
-    className: nginx
-    hosts:
-    - host: nodered.mattgerega.net
-      paths:
-      - service:
-          port: http
-          identifier: main
-        path: /
-        pathType: Prefix
+    replicas: 1
+    strategy: Recreate
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        enabled: true
+        port: 1880
+        primary: true
+    primary: true
+    type: ClusterIP
 
