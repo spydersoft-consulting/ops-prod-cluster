@@ -16,11 +16,11 @@ data:
   Identity__AuthorityUrl: https://auth.mattgerega.com
   Serilog__MinimumLevel__Default: Warning
   Telemetry__Log__Otlp__Endpoint: https://loki.mattgerega.net/otlp/v1/logs
-  Telemetry__Log__Otlp__Headers__X-Scope-OrgID: nonproduction
+  Telemetry__Log__Otlp__Headers__X-Scope-OrgID: production
   Telemetry__Metrics__Otlp__Endpoint: https://mimir.mattgerega.net/otlp
-  Telemetry__Metrics__Otlp__Headers__X-Scope-OrgID: nonproduction
+  Telemetry__Metrics__Otlp__Headers__X-Scope-OrgID: production
   Telemetry__Trace__Otlp__Endpoint: http://tfx-internal.gerega.net:32326
-  Telemetry__Trace__Otlp__Headers__X-Scope-OrgID: nonproduction
+  Telemetry__Trace__Otlp__Headers__X-Scope-OrgID: production
 ---
 # Source: identity-server/templates/common.yaml
 apiVersion: v1
@@ -73,31 +73,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: identity-server-main
-  labels:
-    app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-server
-    app.kubernetes.io/service: identity-server-main
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: identity-server-0.1.0
-  namespace: production
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: main
-    app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/name: identity-server
----
-# Source: identity-server/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
   name: identity-server-postgres
   labels:
     app.kubernetes.io/instance: identity-server
@@ -116,6 +91,31 @@ spec:
       name: postgres
   selector:
     app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/name: identity-server
+---
+# Source: identity-server/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-server-main
+  labels:
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/service: identity-server-main
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: production
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: main
     app.kubernetes.io/instance: identity-server
     app.kubernetes.io/name: identity-server
 ---
@@ -145,7 +145,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 50282bf31c9e73da06510606c48fa23545cbbbbf564f84ee6b812aa5f1c4d728
+        checksum/configMaps: d19be8b1eff3affb865f84977558fa6fc48e2bff6168ad0ae7113292fb5285b2
       labels: 
         app.kubernetes.io/controller: main
         app.kubernetes.io/instance: identity-server
@@ -219,7 +219,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 50282bf31c9e73da06510606c48fa23545cbbbbf564f84ee6b812aa5f1c4d728
+        checksum/configMaps: d19be8b1eff3affb865f84977558fa6fc48e2bff6168ad0ae7113292fb5285b2
       labels: 
         app.kubernetes.io/controller: postgres
         app.kubernetes.io/instance: identity-server
