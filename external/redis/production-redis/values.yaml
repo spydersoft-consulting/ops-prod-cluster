@@ -1,43 +1,43 @@
+environment: production
 redis:
-  metrics:
-    enabled: true
-    serviceMonitor:
-      scrapeTimeout: 30s
-      enabled: true
-  architecture: standalone
-  global:
-    security:
-      allowInsecureImages: true
-    storageClass: nfs-client
   master:
+    service:
+      annotations:
+        config.linkerd.io/opaque-ports: "6379"
+    disableCommands: []
     configuration: |
       loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000
       loadmodule /opt/redis-stack/lib/redistimeseries.so
       loadmodule /opt/redis-stack/lib/rejson.so
       loadmodule /opt/redis-stack/lib/redisbloom.so
     resources:
-      requests:
-        memory: 100Mi
-        cpu: 50m
       limits:
-        memory: 200Mi
         cpu: 100m
-    disableCommands: []
-    service:
-      annotations:
-        config.linkerd.io/opaque-ports: "6379"
-  auth:
-    existingSecretPasswordKey: password
-    existingSecret: redis-secrets
-    usePasswordFileFromSecret: false
-    usePasswordFiles: false
-  image:
-    tag: 7.4.0-v6
-    repository: redis/redis-stack-server
+        memory: 200Mi
+      requests:
+        cpu: 50m
+        memory: 100Mi
   networkPolicy:
     extraIngress:
     - ports:
-      - port: 4143
-        protocol: TCP
-environment: production
+      - protocol: TCP
+        port: 4143
+  auth:
+    existingSecret: redis-secrets
+    existingSecretPasswordKey: password
+    usePasswordFileFromSecret: false
+    usePasswordFiles: false
+  image:
+    repository: redis/redis-stack-server
+    tag: 7.4.0-v6
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      scrapeTimeout: 30s
+  architecture: standalone
+  global:
+    security:
+      allowInsecureImages: true
+    storageClass: nfs-client
 
