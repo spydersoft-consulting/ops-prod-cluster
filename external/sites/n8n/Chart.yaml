@@ -1,12 +1,12 @@
+appVersion: 3.0.2-18
+type: application
+name: n8n
+apiVersion: v2
+dependencies:
+- repository: https://bjw-s-labs.github.io/helm-charts
+  name: common
+  version: 4.3.0
 version: 4.3.0
 description: n8n Helm Chart
-appVersion: 3.0.2-18
-name: n8n
-dependencies:
-- name: common
-  version: 4.3.0
-  repository: https://bjw-s-labs.github.io/helm-charts
-type: application
-apiVersion: v2
 
 
