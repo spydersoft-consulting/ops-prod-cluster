@@ -1,12 +1,12 @@
-name: proget
-type: application
-version: 4.3.0
-apiVersion: v2
 description: Proget Helm Chart - Server only, no database
-dependencies:
-- version: 4.3.0
-  name: common
-  repository: https://bjw-s-labs.github.io/helm-charts
+version: 4.3.0
 appVersion: 23.0.22
+dependencies:
+- name: common
+  version: 4.3.0
+  repository: https://bjw-s-labs.github.io/helm-charts
+apiVersion: v2
+type: application
+name: proget
 
 
