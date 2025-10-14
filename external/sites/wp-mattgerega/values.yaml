@@ -22,11 +22,7 @@ wordpress:
     enabled: true
     storageClass: "nfs-client"
   metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-      interval: "1m"
-      scrapeTimeout: "30s"
+    enabled: false
   mariadb:
     auth:
       existingSecret: "wp-mg-dbsecrets"
