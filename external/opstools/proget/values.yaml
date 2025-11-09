@@ -1,32 +1,3 @@
-persistence:
-  packages:
-    globalMounts:
-    - readOnly: false
-      path: /var/proget/packages
-    type: persistentVolumeClaim
-    enabled: true
-    emptyDir:
-      enabled: false
-    existingClaim: progetdata-claim
-ingress:
-  main:
-    hosts:
-    - host: proget.mattgerega.com
-      paths:
-      - service:
-          port: http
-          identifier: main
-        pathType: Prefix
-        path: /
-    enabled: true
-    annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /
-      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/proxy-body-size: 500M
-      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
-      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
-    className: nginx
 service:
   main:
     primary: true
@@ -34,53 +5,82 @@ service:
     type: ClusterIP
     ports:
       http:
+        port: 80
         primary: true
         enabled: true
-        port: 80
+ingress:
+  main:
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
+      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-body-size: 500M
+      kubernetes.io/ingress.class: nginx
+    enabled: true
+    hosts:
+    - host: proget.mattgerega.com
+      paths:
+      - path: /
+        service:
+          identifier: main
+          port: http
+        pathType: Prefix
+    className: nginx
 controllers:
   main:
     strategy: Recreate
-    revisionHistoryLimit: 3
-    enabled: true
-    replicas: 1
     containers:
       main:
-        strategy:
-          type: Recreate
-        image:
-          pullPolicy: IfNotPresent
-          repository: proget.inedo.com/productimages/inedo/proget
-          tag: 25.0.13
-        probes:
-          startup:
-            enabled: true
-            type: TCP
-            spec:
-              periodSeconds: 5
-              timeoutSeconds: 1
-              failureThreshold: 30
-              initialDelaySeconds: 0
-            custom: false
-          liveness:
-            enabled: true
-            type: TCP
-            spec:
-              periodSeconds: 10
-              timeoutSeconds: 1
-              failureThreshold: 3
-              initialDelaySeconds: 0
-            custom: false
-          readiness:
-            enabled: true
-            type: TCP
-            spec:
-              periodSeconds: 10
-              timeoutSeconds: 1
-              failureThreshold: 3
-              initialDelaySeconds: 0
-            custom: false
         envFrom:
         - secretRef:
             name: proget-secrets
+        image:
+          tag: 25.0.14
+          pullPolicy: IfNotPresent
+          repository: proget.inedo.com/productimages/inedo/proget
+        strategy:
+          type: Recreate
+        probes:
+          startup:
+            custom: false
+            enabled: true
+            type: TCP
+            spec:
+              initialDelaySeconds: 0
+              failureThreshold: 30
+              timeoutSeconds: 1
+              periodSeconds: 5
+          liveness:
+            custom: false
+            enabled: true
+            type: TCP
+            spec:
+              initialDelaySeconds: 0
+              failureThreshold: 3
+              timeoutSeconds: 1
+              periodSeconds: 10
+          readiness:
+            custom: false
+            enabled: true
+            type: TCP
+            spec:
+              initialDelaySeconds: 0
+              failureThreshold: 3
+              timeoutSeconds: 1
+              periodSeconds: 10
+    replicas: 1
     type: deployment
+    revisionHistoryLimit: 3
+    enabled: true
+persistence:
+  packages:
+    enabled: true
+    type: persistentVolumeClaim
+    emptyDir:
+      enabled: false
+    existingClaim: progetdata-claim
+    globalMounts:
+    - path: /var/proget/packages
+      readOnly: false
 
