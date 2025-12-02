@@ -1,160 +1,12 @@
-service:
-  postgres:
-    controller: postgres
-    ports:
-      postgres:
-        port: 5432
-        enabled: true
-    primary: false
-    type: ClusterIP
-  main:
-    controller: main
-    ports:
-      http:
-        port: 5678
-        primary: true
-        enabled: true
-    primary: true
-    type: ClusterIP
-controllers:
-  postgres:
-    type: deployment
-    containers:
-      main:
-        envFrom:
-        - secretRef:
-            name: postgres-secrets
-        strategy:
-          type: Recreate
-        image:
-          tag: 17
-          pullPolicy: IfNotPresent
-          repository: postgres
-        env:
-        - value: 5432
-          name: POSTGRES_PORT
-        - value: postgres-service
-          name: POSTGRES_HOST
-        - value: n8n
-          name: POSTGRES_DB
-    enabled: true
-    replicas: 1
-    strategy: Recreate
-    revisionHistoryLimit: 3
-  main:
-    type: deployment
-    initContainers:
-      volume-permissions:
-        command:
-        - sh
-        - -c
-        - chown 1000:1000 /home/node/.n8n
-        volumeMounts:
-        - mountPath: /home/node/.n8n
-          name: '{{ .Release.Name }}-data'
-        image:
-          tag: 1.36
-          repository: busybox
-    containers:
-      main:
-        probes:
-          startup:
-            custom: false
-            spec:
-              timeoutSeconds: 1
-              periodSeconds: 5
-              failureThreshold: 30
-              initialDelaySeconds: 0
-            enabled: true
-            type: TCP
-          liveness:
-            custom: false
-            spec:
-              timeoutSeconds: 1
-              periodSeconds: 10
-              failureThreshold: 3
-              initialDelaySeconds: 0
-            enabled: true
-            type: TCP
-          readiness:
-            custom: false
-            spec:
-              timeoutSeconds: 1
-              periodSeconds: 10
-              failureThreshold: 3
-              initialDelaySeconds: 0
-            enabled: true
-            type: TCP
-        image:
-          tag: 1.121.3
-          pullPolicy: IfNotPresent
-          repository: n8nio/n8n
-        envFrom:
-        - configMapRef:
-            name: '{{ .Release.Name }}'
-        strategy:
-          type: Recreate
-        env:
-        - value: postgresdb
-          name: DB_TYPE
-        - value: '{{ .Release.Name }}-postgres'
-          name: DB_POSTGRESDB_HOST
-        - value: 5432
-          name: DB_POSTGRESDB_PORT
-        - value: n8n
-          name: DB_POSTGRESDB_DATABASE
-        - valueFrom:
-            secretKeyRef:
-              key: POSTGRES_NON_ROOT_USER
-              name: postgres-secrets
-          name: DB_POSTGRESDB_USER
-        - valueFrom:
-            secretKeyRef:
-              key: POSTGRES_NON_ROOT_PASSWORD
-              name: postgres-secrets
-          name: DB_POSTGRESDB_PASSWORD
-    enabled: true
-    replicas: 1
-    strategy: Recreate
-    revisionHistoryLimit: 3
-persistence:
-  postgres-data:
-    type: persistentVolumeClaim
-    accessMode: ReadWriteMany
-    storageClass: nfs-client
-    enabled: true
-    size: 300Gi
-    advancedMounts:
-      postgres:
-        main:
-        - path: /var/lib/postgresql/data
-  postgres-secrets:
-    enabled: true
-    name: postgres-secrets
-    type: secret
-  postgres-init-data:
-    identifier: postgres-init-data
-    enabled: true
-    advancedMounts:
-      postgres:
-        main:
-        - subPath: init-data.sh
-          path: /docker-entrypoint-initdb.d/init-n8n-user.sh
-    type: configMap
-  data:
-    type: persistentVolumeClaim
-    accessMode: ReadWriteMany
-    storageClass: nfs-client
-    enabled: true
-    size: 2Gi
-    advancedMounts:
-      main:
-        main:
-        - path: /home/node/.n8n
-        volume-permissions:
-        - path: /home/node/.n8n
 configMaps:
+  n8n:
+    enabled: true
+    data:
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: http
+      N8N_RUNNERS_ENABLED: "true"
   postgres-init-data:
+    enabled: true
     data:
       init-data.sh: |
         #!/bin/bash
@@ -167,27 +19,175 @@ configMaps:
         else
           echo "SETUP INFO: No Environment variables given!"
         fi
+controllers:
+  main:
+    revisionHistoryLimit: 3
+    containers:
+      main:
+        env:
+        - value: postgresdb
+          name: DB_TYPE
+        - value: '{{ .Release.Name }}-postgres'
+          name: DB_POSTGRESDB_HOST
+        - value: 5432
+          name: DB_POSTGRESDB_PORT
+        - value: n8n
+          name: DB_POSTGRESDB_DATABASE
+        - name: DB_POSTGRESDB_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secrets
+              key: POSTGRES_NON_ROOT_USER
+        - name: DB_POSTGRESDB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secrets
+              key: POSTGRES_NON_ROOT_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: '{{ .Release.Name }}'
+        strategy:
+          type: Recreate
+        image:
+          tag: 1.122.4
+          pullPolicy: IfNotPresent
+          repository: n8nio/n8n
+        probes:
+          readiness:
+            type: TCP
+            custom: false
+            enabled: true
+            spec:
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+              initialDelaySeconds: 0
+          liveness:
+            type: TCP
+            custom: false
+            enabled: true
+            spec:
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+              initialDelaySeconds: 0
+          startup:
+            type: TCP
+            custom: false
+            enabled: true
+            spec:
+              periodSeconds: 5
+              timeoutSeconds: 1
+              failureThreshold: 30
+              initialDelaySeconds: 0
+    type: deployment
+    initContainers:
+      volume-permissions:
+        volumeMounts:
+        - name: '{{ .Release.Name }}-data'
+          mountPath: /home/node/.n8n
+        command:
+        - sh
+        - -c
+        - chown 1000:1000 /home/node/.n8n
+        image:
+          tag: 1.36
+          repository: busybox
     enabled: true
-  n8n:
-    data:
-      N8N_PROTOCOL: http
-      N8N_RUNNERS_ENABLED: "true"
-      N8N_PORT: "5678"
+    replicas: 1
+    strategy: Recreate
+  postgres:
+    revisionHistoryLimit: 3
+    containers:
+      main:
+        envFrom:
+        - secretRef:
+            name: postgres-secrets
+        strategy:
+          type: Recreate
+        env:
+        - value: 5432
+          name: POSTGRES_PORT
+        - value: postgres-service
+          name: POSTGRES_HOST
+        - value: n8n
+          name: POSTGRES_DB
+        image:
+          tag: 17
+          pullPolicy: IfNotPresent
+          repository: postgres
+    type: deployment
     enabled: true
+    replicas: 1
+    strategy: Recreate
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 5678
+        primary: true
+        enabled: true
+    primary: true
+    type: ClusterIP
+  postgres:
+    controller: postgres
+    ports:
+      postgres:
+        port: 5432
+        enabled: true
+    primary: false
+    type: ClusterIP
 ingress:
   main:
-    hosts:
-    - host: n8n.mattgerega.com
-      paths:
-      - service:
-          port: http
-          identifier: main
-        pathType: Prefix
-        path: /
     className: nginx
-    enabled: true
     annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/proxy-body-size: 500M
-      nginx.ingress.kubernetes.io/rewrite-target: /
+    hosts:
+    - paths:
+      - pathType: Prefix
+        path: /
+        service:
+          port: http
+          identifier: main
+      host: n8n.mattgerega.com
+    enabled: true
+persistence:
+  postgres-data:
+    storageClass: nfs-client
+    accessMode: ReadWriteMany
+    type: persistentVolumeClaim
+    size: 300Gi
+    enabled: true
+    advancedMounts:
+      postgres:
+        main:
+        - path: /var/lib/postgresql/data
+  postgres-init-data:
+    type: configMap
+    identifier: postgres-init-data
+    advancedMounts:
+      postgres:
+        main:
+        - path: /docker-entrypoint-initdb.d/init-n8n-user.sh
+          subPath: init-data.sh
+    enabled: true
+  postgres-secrets:
+    type: secret
+    name: postgres-secrets
+    enabled: true
+  data:
+    storageClass: nfs-client
+    accessMode: ReadWriteMany
+    type: persistentVolumeClaim
+    size: 2Gi
+    enabled: true
+    advancedMounts:
+      main:
+        main:
+        - path: /home/node/.n8n
+        volume-permissions:
+        - path: /home/node/.n8n
 
