@@ -141,12 +141,3 @@ spec:
                 name: unifi-ipmanager-main
                 port:
                   number: 80
----
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: unifi-ipmanager-stripprefix
-spec:
-  stripPrefix:
-    prefixes:
-      - "/unifi/ipmanager"
