@@ -1,15 +1,17 @@
 ---
 # Source: unifi-ipmanager/templates/common.yaml
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: unifi-ipmanager-ipmanager
+  name: unifi-ipmanager
   labels:
     app.kubernetes.io/instance: unifi-ipmanager
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: unifi-ipmanager-0.1.0
+  namespace: production
 data:
   Identity__ApiName: unifi.ipmanager
   UnifiControllerOptions__DnsZone: gerega.net
@@ -19,14 +21,15 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: unifi-ipmanager-main
+  name: unifi-ipmanager
   labels:
     app.kubernetes.io/instance: unifi-ipmanager
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager
-    app.kubernetes.io/service: unifi-ipmanager-main
+    app.kubernetes.io/service: unifi-ipmanager
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: unifi-ipmanager-0.1.0
+  namespace: production
 spec:
   type: ClusterIP
   ports:
@@ -35,23 +38,23 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/component: main
+    app.kubernetes.io/controller: main
     app.kubernetes.io/instance: unifi-ipmanager
     app.kubernetes.io/name: unifi-ipmanager
 ---
 # Source: unifi-ipmanager/templates/common.yaml
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: unifi-ipmanager
   labels:
-    app.kubernetes.io/component: main
+    app.kubernetes.io/controller: main
     app.kubernetes.io/instance: unifi-ipmanager
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: unifi-ipmanager-0.1.0
+  namespace: production
 spec:
   revisionHistoryLimit: 3
   replicas: 1
@@ -59,7 +62,7 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app.kubernetes.io/component: main
+      app.kubernetes.io/controller: main
       app.kubernetes.io/name: unifi-ipmanager
       app.kubernetes.io/instance: unifi-ipmanager
   template:
@@ -67,11 +70,11 @@ spec:
       annotations: 
         checksum/configMaps: 3c100812910b593ebc32a833d870f8a12810a99c4e2b0fba281c3e7bc21343ed
       labels: 
-        app.kubernetes.io/component: main
+        app.kubernetes.io/controller: main
         app.kubernetes.io/instance: unifi-ipmanager
         app.kubernetes.io/name: unifi-ipmanager
     spec: 
-      enableServiceLinks: true
+      enableServiceLinks: false
       serviceAccountName: default
       automountServiceAccountToken: true
       hostIPC: false
@@ -85,7 +88,7 @@ spec:
           - configMapRef:
               name: home-automation-common-config
           - configMapRef:
-              name: unifi-ipmanager-ipmanager
+              name: unifi-ipmanager
           - secretRef:
               name: unifi-secrets
           image: ghcr.io/spyder007/unifi-ipmanager:1.1.1-127
@@ -107,17 +110,10 @@ spec:
             initialDelaySeconds: 0
             periodSeconds: 10
             timeoutSeconds: 1
-          startupProbe:
-            failureThreshold: 30
-            initialDelaySeconds: 0
-            periodSeconds: 5
-            tcpSocket:
-              port: 8080
-            timeoutSeconds: 1
 ---
 # Source: unifi-ipmanager/templates/common.yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
 metadata:
   name: unifi-ipmanager
   labels:
@@ -126,18 +122,30 @@ metadata:
     app.kubernetes.io/name: unifi-ipmanager
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: unifi-ipmanager-0.1.0
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  namespace: production
 spec:
-  ingressClassName: nginx
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "test.mattgerega.net"
   rules:
-    - host: "api.mattgerega.com"
-      http:
-        paths:
-          - path: "/unifi/ipmanager(/|$)(.*)"
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: unifi-ipmanager-main
-                port:
-                  number: 80
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: unifi-ipmanager
+        namespace: production
+        port: 80
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /unifi/ipmanager
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              replacePrefixMatch: /
+              type: ReplacePrefixMatch
