@@ -138,22 +138,25 @@ service:
         enabled: true
     primary: false
     type: ClusterIP
-ingress:
+route:
   main:
-    className: nginx
-    annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/proxy-body-size: 500M
-    hosts:
-    - paths:
-      - pathType: Prefix
-        path: /
-        service:
-          port: http
-          identifier: main
-      host: n8n.mattgerega.com
     enabled: true
+    kind: HTTPRoute
+    parentRefs:
+      - name: main
+        namespace: envoy-gateway-system
+        group: gateway.networking.k8s.io
+        kind: Gateway
+    hostnames:
+      - n8n.mattgerega.com
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /
+        backendRefs:
+          - identifier: main
+            port: 5678
 persistence:
   postgres-data:
     storageClass: nfs-client

@@ -44,25 +44,25 @@ controllers:
     replicas: 1
     strategy: Recreate
     revisionHistoryLimit: 3
-ingress:
+route:
   main:
-    hosts:
-    - paths:
-      - pathType: Prefix
-        path: /
-        service:
-          port: http
-          identifier: main
-      host: proget.mattgerega.com
     enabled: true
-    className: nginx
-    annotations:
-      nginx.ingress.kuberenetes.io/proxy-connect-timeout: "3600"
-      nginx.ingress.kuberenetes.io/proxy-read-timeout: "3600"
-      nginx.ingress.kuberenetes.io/proxy-send-timeout: "3600"
-      nginx.ingress.kubernetes.io/proxy-body-size: 500M
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/rewrite-target: /
+    kind: HTTPRoute
+    parentRefs:
+      - name: main
+        namespace: envoy-gateway-system
+        group: gateway.networking.k8s.io
+        kind: Gateway
+    hostnames:
+      - proget.mattgerega.com
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /
+        backendRefs:
+          - name: proget-main
+            port: 80
 persistence:
   packages:
     emptyDir:
