@@ -1,19 +1,22 @@
-ingress:
+route:
   main:
-    className: nginx
-    annotations:
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/proxy-body-size: 500M
-      nginx.ingress.kubernetes.io/rewrite-target: /
     enabled: true
-    hosts:
-    - host: nodered.mattgerega.net
-      paths:
-      - pathType: Prefix
-        path: /
-        service:
-          identifier: main
-          port: http
+    kind: HTTPRoute
+    parentRefs:
+      - name: main
+        namespace: envoy-gateway-system
+        group: gateway.networking.k8s.io
+        kind: Gateway
+    hostnames:
+      - nodered.mattgerega.net
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /
+        backendRefs:
+          - identifier: main
+            port: 1880
 service:
   main:
     ports:

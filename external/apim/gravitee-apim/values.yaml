@@ -4,27 +4,27 @@ apim3:
     driver: https://github.com/microsoft/mssql-jdbc/releases/download/v12.2.0/mssql-jdbc-12.2.0.jre11.jar
   ui:
     ingress:
-      enabled: true
+      enabled: false  # Migrated to Gateway API HTTPRoute
       hosts:
         - apim.mattgerega.com
   portal:
     ingress:
-      enabled: true
+      enabled: false  # Migrated to Gateway API HTTPRoute
       hosts:
         - developer.mattgerega.com
   api:
     ingress:
       management:
-        enabled: true
+        enabled: false  # Migrated to Gateway API HTTPRoute
         hosts:
           - apim.mattgerega.com
       portal:
-        enabled: true
+        enabled: false  # Migrated to Gateway API HTTPRoute
         hosts:
           - apim.mattgerega.com
   gateway:
     ingress:
-      enabled: true
+      enabled: false  # Migrated to Gateway API HTTPRoute
       path: /
       hosts:
         - apig.mattgerega.com

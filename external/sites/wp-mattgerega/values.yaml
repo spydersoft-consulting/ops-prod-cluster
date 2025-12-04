@@ -14,7 +14,7 @@ wordpress:
     type: ClusterIP
 
   ingress:
-    enabled: true
+    enabled: false  # Migrated to Gateway API HTTPRoute
     ingressClassName: nginx
     hostname: www.mattgerega.com
     annotations: { nginx.ingress.kubernetes.io/proxy-body-size: 50M }
