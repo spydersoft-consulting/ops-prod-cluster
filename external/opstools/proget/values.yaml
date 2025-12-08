@@ -1,86 +1,86 @@
-controllers:
+service:
   main:
-    containers:
-      main:
-        probes:
-          startup:
-            enabled: true
-            spec:
-              timeoutSeconds: 1
-              periodSeconds: 5
-              initialDelaySeconds: 0
-              failureThreshold: 30
-            type: TCP
-            custom: false
-          liveness:
-            enabled: true
-            spec:
-              timeoutSeconds: 1
-              periodSeconds: 10
-              initialDelaySeconds: 0
-              failureThreshold: 3
-            type: TCP
-            custom: false
-          readiness:
-            enabled: true
-            spec:
-              timeoutSeconds: 1
-              periodSeconds: 10
-              initialDelaySeconds: 0
-              failureThreshold: 3
-            type: TCP
-            custom: false
-        image:
-          tag: 25.0.15
-          repository: proget.inedo.com/productimages/inedo/proget
-          pullPolicy: IfNotPresent
-        envFrom:
-        - secretRef:
-            name: proget-secrets
-        strategy:
-          type: Recreate
-    type: deployment
-    enabled: true
-    replicas: 1
-    strategy: Recreate
-    revisionHistoryLimit: 3
+    controller: main
+    type: ClusterIP
+    primary: true
+    ports:
+      http:
+        primary: true
+        enabled: true
+        port: 80
 route:
   main:
+    hostnames:
+    - proget.mattgerega.com
     enabled: true
     kind: HTTPRoute
     parentRefs:
-      - name: main
-        namespace: envoy-gateway-system
-        group: gateway.networking.k8s.io
-        kind: Gateway
-    hostnames:
-      - proget.mattgerega.com
+    - namespace: envoy-gateway-system
+      kind: Gateway
+      name: main
+      group: gateway.networking.k8s.io
     rules:
-      - matches:
-          - path:
-              type: PathPrefix
-              value: /
-        backendRefs:
-          - name: proget-main
-            port: 80
+    - backendRefs:
+      - name: proget-main
+        port: 80
+      matches:
+      - path:
+          value: /
+          type: PathPrefix
+controllers:
+  main:
+    strategy: Recreate
+    enabled: true
+    replicas: 1
+    type: deployment
+    containers:
+      main:
+        strategy:
+          type: Recreate
+        envFrom:
+        - secretRef:
+            name: proget-secrets
+        image:
+          repository: proget.inedo.com/productimages/inedo/proget
+          pullPolicy: IfNotPresent
+          tag: 25.0.16
+        probes:
+          startup:
+            custom: false
+            spec:
+              periodSeconds: 5
+              initialDelaySeconds: 0
+              failureThreshold: 30
+              timeoutSeconds: 1
+            enabled: true
+            type: TCP
+          liveness:
+            custom: false
+            spec:
+              periodSeconds: 10
+              initialDelaySeconds: 0
+              failureThreshold: 3
+              timeoutSeconds: 1
+            enabled: true
+            type: TCP
+          readiness:
+            custom: false
+            spec:
+              periodSeconds: 10
+              initialDelaySeconds: 0
+              failureThreshold: 3
+              timeoutSeconds: 1
+            enabled: true
+            type: TCP
+    revisionHistoryLimit: 3
 persistence:
   packages:
+    existingClaim: progetdata-claim
+    enabled: true
+    type: persistentVolumeClaim
     emptyDir:
       enabled: false
-    type: persistentVolumeClaim
-    enabled: true
-    existingClaim: progetdata-claim
     globalMounts:
-    - readOnly: false
-      path: /var/proget/packages
-service:
-  main:
-    type: ClusterIP
-    primary: true
-    controller: main
-    ports:
-      http:
-        port: 80
-        enabled: true
-        primary: true
+    - path: /var/proget/packages
+      readOnly: false
 
