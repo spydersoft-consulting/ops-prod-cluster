@@ -28,18 +28,17 @@ controllers:
           WORDPRESS_DB_HOST: "wp-mattgerega-com-mariadb"
           WORDPRESS_DB_NAME: "wordpress"
           WORDPRESS_DB_USER: "wordpress"
+          WORDPRESS_DB_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: wp-mg-com-dbsecrets
+                key: MARIADB_PASSWORD
           WORDPRESS_CONFIG_EXTRA: |
             /* Force HTTPS */
             if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
                 $_SERVER['HTTPS'] = 'on';
             }
             define('FORCE_SSL_ADMIN', true);
-
-        envFrom:
-          - secretRef:
-              name: wp-mg-com-secrets
-          - secretRef:
-              name: wp-mg-com-dbsecrets
 
         probes:
           liveness:
@@ -118,10 +117,16 @@ controllers:
         env:
           MARIADB_DATABASE: "wordpress"
           MARIADB_USER: "wordpress"
-
-        envFrom:
-          - secretRef:
-              name: wp-mg-com-dbsecrets
+          MARIADB_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: wp-mg-com-dbsecrets
+                key: MARIADB_PASSWORD
+          MARIADB_ROOT_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: wp-mg-com-dbsecrets
+                key: MARIADB_ROOT_PASSWORD
 
         probes:
           liveness:
