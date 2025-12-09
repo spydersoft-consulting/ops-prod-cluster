@@ -19,6 +19,8 @@ spec:
   template:
     metadata:
       name: "{{path.basename}}"
+      annotations:
+        argocd.argoproj.io/compare-options: ServerSideDiff=true
       labels:
         spydersoft.io/environment: production
         spydersoft.io/category: "{{path[1]}}"
