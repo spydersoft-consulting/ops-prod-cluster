@@ -74,8 +74,11 @@ route:
           type: PathPrefix
           value: /
       backendRefs:
-      - identifier: main
+      - group: ''
+        kind: Service
+        identifier: main
         port: 1880
+        weight: 1
 persistence:
   data:
     enabled: true

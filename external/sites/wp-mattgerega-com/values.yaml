@@ -1,5 +1,8 @@
 global:
-  nameOverride: wp-mattgerega-bjws
+  nameOverride: wp-mattgerega-com
+
+defaultPodOptions:
+  automountServiceAccountToken: false
 
 controllers:
   # WordPress controller - Deployment
@@ -9,30 +12,34 @@ controllers:
     replicas: 1
     strategy: RollingUpdate
 
+    pod:
+      securityContext:
+        fsGroup: 33  # www-data user
+        fsGroupChangePolicy: "OnRootMismatch"
+
     containers:
       main:
         image:
-          repository: docker.io/bitnami/wordpress
-          tag: 6.9.0
+          repository: docker.io/wordpress
+          tag: 6.9.0-apache
           pullPolicy: IfNotPresent
 
         env:
-          BITNAMI_DEBUG: "false"
-          ALLOW_EMPTY_PASSWORD: "no"
-          WORDPRESS_SKIP_BOOTSTRAP: "no"
-          MARIADB_HOST: "wp-mattgerega-bjws-mariadb"
-          MARIADB_PORT_NUMBER: "3306"
-          WORDPRESS_DATABASE_NAME: "bitnami_wordpress"
-          WORDPRESS_DATABASE_USER: "bn_wordpress"
-          WORDPRESS_USERNAME: "admin"
-          WORDPRESS_SCHEME: "https"
-          OPENSSL_FIPS: "yes"
+          WORDPRESS_DB_HOST: "wp-mattgerega-com-mariadb"
+          WORDPRESS_DB_NAME: "wordpress"
+          WORDPRESS_DB_USER: "wordpress"
+          WORDPRESS_CONFIG_EXTRA: |
+            /* Force HTTPS */
+            if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+                $_SERVER['HTTPS'] = 'on';
+            }
+            define('FORCE_SSL_ADMIN', true);
 
         envFrom:
           - secretRef:
-              name: wp-mg-secrets-bjws
+              name: wp-mg-com-secrets
           - secretRef:
-              name: wp-mg-dbsecrets-bjws
+              name: wp-mg-com-dbsecrets
 
         probes:
           liveness:
@@ -45,7 +52,7 @@ controllers:
               failureThreshold: 6
           readiness:
             enabled: true
-            type: HTTPS
+            type: HTTP
             spec:
               httpHeaders:
                 - name: X-Forwarded-Proto
@@ -68,7 +75,7 @@ controllers:
 
         securityContext:
           runAsNonRoot: true
-          runAsUser: 1001
+          runAsUser: 33  # www-data user
           readOnlyRootFilesystem: false
           allowPrivilegeEscalation: false
           seccompProfile:
@@ -76,17 +83,21 @@ controllers:
           capabilities:
             drop:
               - ALL
-
-    pod:
-      securityContext:
-        fsGroup: 1001
-        fsGroupChangePolicy: "OnRootMismatch"
+            add:
+              - CHOWN
+              - SETGID
+              - SETUID
 
   # MariaDB controller - StatefulSet
   mariadb:
     enabled: true
     type: statefulset
     replicas: 1
+
+    pod:
+      securityContext:
+        fsGroup: 999  # mysql user
+        fsGroupChangePolicy: "OnRootMismatch"
 
     statefulset:
       volumeClaimTemplates:
@@ -95,25 +106,22 @@ controllers:
           size: 8Gi
           storageClass: nfs-client
           globalMounts:
-            - path: /bitnami/mariadb
+            - path: /var/lib/mysql
 
     containers:
       main:
         image:
-          repository: docker.io/bitnami/mariadb
-          tag: 11.6.2
+          repository: docker.io/mariadb
+          tag: "11.8"
           pullPolicy: IfNotPresent
 
         env:
-          BITNAMI_DEBUG: "false"
-          MARIADB_USER: "bn_wordpress"
-          MARIADB_DATABASE: "bitnami_wordpress"
-          MARIADB_ENABLE_SSL: "no"
-          OPENSSL_FIPS: "yes"
+          MARIADB_DATABASE: "wordpress"
+          MARIADB_USER: "wordpress"
 
         envFrom:
           - secretRef:
-              name: wp-mg-dbsecrets-bjws
+              name: wp-mg-com-dbsecrets
 
         probes:
           liveness:
@@ -121,35 +129,37 @@ controllers:
             type: EXEC
             spec:
               command:
-                - /bin/bash
-                - -ec
-                - |
-                  password_aux="${MARIADB_ROOT_PASSWORD:-}"
-                  if [[ -f "${MARIADB_ROOT_PASSWORD_FILE:-}" ]]; then
-                      password_aux=$(cat "$MARIADB_ROOT_PASSWORD_FILE")
-                  fi
-                  mariadb-admin status -uroot -p"${password_aux}"
-              initialDelaySeconds: 600
+                - /bin/sh
+                - -c
+                - mariadb-admin ping -uroot -p${MARIADB_ROOT_PASSWORD}
+              initialDelaySeconds: 120
               periodSeconds: 10
-              timeoutSeconds: 1
+              timeoutSeconds: 5
               failureThreshold: 3
           readiness:
             enabled: true
             type: EXEC
             spec:
               command:
-                - /bin/bash
-                - -ec
-                - |
-                  password_aux="${MARIADB_ROOT_PASSWORD:-}"
-                  if [[ -f "${MARIADB_ROOT_PASSWORD_FILE:-}" ]]; then
-                      password_aux=$(cat "$MARIADB_ROOT_PASSWORD_FILE")
-                  fi
-                  mariadb-admin ping -uroot -p"${password_aux}"
-              initialDelaySeconds: 600
+                - /bin/sh
+                - -c
+                - mariadb-admin ping -uroot -p${MARIADB_ROOT_PASSWORD}
+              initialDelaySeconds: 30
               periodSeconds: 10
-              timeoutSeconds: 1
+              timeoutSeconds: 5
               failureThreshold: 3
+          startup:
+            enabled: true
+            type: EXEC
+            spec:
+              command:
+                - /bin/sh
+                - -c
+                - mariadb-admin ping -uroot -p${MARIADB_ROOT_PASSWORD}
+              initialDelaySeconds: 10
+              periodSeconds: 5
+              timeoutSeconds: 5
+              failureThreshold: 30
 
         resources:
           requests:
@@ -163,7 +173,7 @@ controllers:
 
         securityContext:
           runAsNonRoot: true
-          runAsUser: 1001
+          runAsUser: 999  # mysql user
           readOnlyRootFilesystem: false
           allowPrivilegeEscalation: false
           seccompProfile:
@@ -171,11 +181,10 @@ controllers:
           capabilities:
             drop:
               - ALL
-
-    pod:
-      securityContext:
-        fsGroup: 1001
-        fsGroupChangePolicy: "OnRootMismatch"
+            add:
+              - CHOWN
+              - SETGID
+              - SETUID
 
 service:
   # WordPress service
@@ -188,10 +197,6 @@ service:
         enabled: true
         port: 80
         protocol: HTTP
-      https:
-        enabled: true
-        port: 443
-        protocol: HTTPS
 
   # MariaDB service
   mariadb:
@@ -225,13 +230,10 @@ persistence:
     accessMode: ReadWriteOnce
     size: 10Gi
     retain: true
-    globalMounts:
-      - path: /bitnami/wordpress
-        readOnly: false
     advancedMounts:
       wordpress:
         main:
-          - path: /bitnami/wordpress
+          - path: /var/www/html
             readOnly: false
 
 configMaps: {}

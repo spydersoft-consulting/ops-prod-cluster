@@ -23,8 +23,11 @@ route:
   main:
     rules:
     - backendRefs:
-      - port: 5678
+      - group: ''
+        kind: Service
+        port: 5678
         identifier: main
+        weight: 1
       matches:
       - path:
           value: /
