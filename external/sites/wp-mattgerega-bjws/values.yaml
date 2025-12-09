@@ -1,0 +1,239 @@
+global:
+  nameOverride: wp-mattgerega-bjws
+
+controllers:
+  # WordPress controller - Deployment
+  wordpress:
+    enabled: true
+    type: deployment
+    replicas: 1
+    strategy: RollingUpdate
+
+    containers:
+      main:
+        image:
+          repository: docker.io/bitnami/wordpress
+          tag: 6.9.0
+          pullPolicy: IfNotPresent
+
+        env:
+          BITNAMI_DEBUG: "false"
+          ALLOW_EMPTY_PASSWORD: "no"
+          WORDPRESS_SKIP_BOOTSTRAP: "no"
+          MARIADB_HOST: "wp-mattgerega-bjws-mariadb"
+          MARIADB_PORT_NUMBER: "3306"
+          WORDPRESS_DATABASE_NAME: "bitnami_wordpress"
+          WORDPRESS_DATABASE_USER: "bn_wordpress"
+          WORDPRESS_USERNAME: "admin"
+          WORDPRESS_SCHEME: "https"
+          OPENSSL_FIPS: "yes"
+
+        envFrom:
+          - secretRef:
+              name: wp-mg-secrets-bjws
+          - secretRef:
+              name: wp-mg-dbsecrets-bjws
+
+        probes:
+          liveness:
+            enabled: true
+            type: TCP
+            spec:
+              initialDelaySeconds: 120
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 6
+          readiness:
+            enabled: true
+            type: HTTPS
+            spec:
+              httpHeaders:
+                - name: X-Forwarded-Proto
+                  value: https
+              path: /wp-login.php
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 6
+
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+            ephemeral-storage: 50Mi
+          limits:
+            cpu: 750m
+            memory: 768Mi
+            ephemeral-storage: 2Gi
+
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop:
+              - ALL
+
+    pod:
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: "OnRootMismatch"
+
+  # MariaDB controller - StatefulSet
+  mariadb:
+    enabled: true
+    type: statefulset
+    replicas: 1
+
+    statefulset:
+      volumeClaimTemplates:
+        - name: data
+          accessMode: ReadWriteOnce
+          size: 8Gi
+          storageClass: nfs-client
+          globalMounts:
+            - path: /bitnami/mariadb
+
+    containers:
+      main:
+        image:
+          repository: docker.io/bitnami/mariadb
+          tag: 11.6.2
+          pullPolicy: IfNotPresent
+
+        env:
+          BITNAMI_DEBUG: "false"
+          MARIADB_USER: "bn_wordpress"
+          MARIADB_DATABASE: "bitnami_wordpress"
+          MARIADB_ENABLE_SSL: "no"
+          OPENSSL_FIPS: "yes"
+
+        envFrom:
+          - secretRef:
+              name: wp-mg-dbsecrets-bjws
+
+        probes:
+          liveness:
+            enabled: true
+            type: EXEC
+            spec:
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  password_aux="${MARIADB_ROOT_PASSWORD:-}"
+                  if [[ -f "${MARIADB_ROOT_PASSWORD_FILE:-}" ]]; then
+                      password_aux=$(cat "$MARIADB_ROOT_PASSWORD_FILE")
+                  fi
+                  mariadb-admin status -uroot -p"${password_aux}"
+              initialDelaySeconds: 600
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            type: EXEC
+            spec:
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  password_aux="${MARIADB_ROOT_PASSWORD:-}"
+                  if [[ -f "${MARIADB_ROOT_PASSWORD_FILE:-}" ]]; then
+                      password_aux=$(cat "$MARIADB_ROOT_PASSWORD_FILE")
+                  fi
+                  mariadb-admin ping -uroot -p"${password_aux}"
+              initialDelaySeconds: 600
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+            ephemeral-storage: 50Mi
+          limits:
+            cpu: 750m
+            memory: 768Mi
+            ephemeral-storage: 2Gi
+
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop:
+              - ALL
+
+    pod:
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: "OnRootMismatch"
+
+service:
+  # WordPress service
+  wordpress:
+    enabled: true
+    controller: wordpress
+    type: ClusterIP
+    ports:
+      http:
+        enabled: true
+        port: 80
+        protocol: HTTP
+      https:
+        enabled: true
+        port: 443
+        protocol: HTTPS
+
+  # MariaDB service
+  mariadb:
+    enabled: true
+    controller: mariadb
+    type: ClusterIP
+    ports:
+      mysql:
+        enabled: true
+        port: 3306
+        protocol: TCP
+
+  # MariaDB headless service (for StatefulSet)
+  mariadb-headless:
+    enabled: true
+    controller: mariadb
+    type: ClusterIP
+    clusterIP: None
+    ports:
+      mysql:
+        enabled: true
+        port: 3306
+        protocol: TCP
+
+persistence:
+  # WordPress persistent storage
+  wordpress-data:
+    enabled: true
+    type: persistentVolumeClaim
+    storageClass: nfs-client
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    retain: true
+    globalMounts:
+      - path: /bitnami/wordpress
+        readOnly: false
+    advancedMounts:
+      wordpress:
+        main:
+          - path: /bitnami/wordpress
+            readOnly: false
+
+configMaps: {}
+
+secrets: {}
