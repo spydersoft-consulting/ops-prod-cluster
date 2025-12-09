@@ -21,8 +21,11 @@ route:
       group: gateway.networking.k8s.io
     rules:
     - backendRefs:
-      - name: proget-main
+      - group: ''
+        kind: Service
+        name: proget-main
         port: 80
+        weight: 1
       matches:
       - path:
           value: /

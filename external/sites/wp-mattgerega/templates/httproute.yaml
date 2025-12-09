@@ -17,5 +17,8 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: wp-mattgerega-wordpress
+        - group: ''
+          kind: Service
+          name: wp-mattgerega-wordpress
           port: 80
+          weight: 1
