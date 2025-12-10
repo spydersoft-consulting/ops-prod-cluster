@@ -16,7 +16,7 @@ wordpress:
   ingress:
     enabled: false  # Migrated to Gateway API HTTPRoute
     ingressClassName: nginx
-    hostname: www.mattgerega.com
+    hostname: old.mattgerega.com
     annotations: { nginx.ingress.kubernetes.io/proxy-body-size: 50M }
   persistence:
     enabled: true
