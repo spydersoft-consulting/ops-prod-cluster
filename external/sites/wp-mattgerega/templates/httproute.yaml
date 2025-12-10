@@ -10,7 +10,7 @@ spec:
       group: gateway.networking.k8s.io
       kind: Gateway
   hostnames:
-    - www.mattgerega.com
+    - old.mattgerega.com
   rules:
     - matches:
         - path:
