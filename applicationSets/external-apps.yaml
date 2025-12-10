@@ -16,7 +16,7 @@ spec:
             exclude: true
           - path: external/opstools/*
             exclude: true
-          - path: external/sites/wp-mattgerega/*
+          - path: external/sites/wp-mattgerega
             exclude: true
   template:
     metadata:
