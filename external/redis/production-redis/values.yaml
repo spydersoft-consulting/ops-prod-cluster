@@ -17,8 +17,8 @@ configMaps:
         save ""
 
         # Security - disable dangerous commands
-        rename-command FLUSHDB ""
-        rename-command FLUSHALL ""
+        # rename-command FLUSHDB ""
+        # rename-command FLUSHALL ""
 
         # Redis Stack Modules
         loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000
