@@ -1,89 +1,89 @@
 service:
   main:
     controller: main
+    primary: true
     ports:
       http:
         primary: true
         enabled: true
         port: 1880
-    primary: true
     type: ClusterIP
-persistence:
-  data:
-    accessMode: ReadWriteMany
-    enabled: true
-    size: 2Gi
-    type: persistentVolumeClaim
-    storageClass: nfs-client
 route:
   main:
+    enabled: true
     rules:
     - matches:
       - path:
-          value: /
           type: PathPrefix
+          value: /
       backendRefs:
-      - weight: 1
-        group: ""
+      - group: ""
         identifier: main
-        kind: Service
         port: 1880
-    hostnames:
-    - nodered.mattgerega.net
-    enabled: true
+        kind: Service
+        weight: 1
     parentRefs:
-    - kind: Gateway
+    - group: gateway.networking.k8s.io
       namespace: envoy-gateway-system
-      group: gateway.networking.k8s.io
+      kind: Gateway
       name: main
     kind: HTTPRoute
+    hostnames:
+    - nodered.mattgerega.net
+persistence:
+  data:
+    size: 2Gi
+    accessMode: ReadWriteMany
+    storageClass: nfs-client
+    type: persistentVolumeClaim
+    enabled: true
 controllers:
   main:
-    replicas: 1
     enabled: true
+    strategy: Recreate
+    revisionHistoryLimit: 3
+    replicas: 1
     type: deployment
     containers:
       main:
         image:
-          repository: nodered/node-red
-          tag: 4.1.2
           pullPolicy: IfNotPresent
-        env:
-          NODE_OPTIONS: 
-          NODE_RED_ENABLE_SAFE_MODE: 
-          NODE_RED_ENABLE_PROJECTS: 
-          FLOWS: flows.json
-          TZ: America/New_York
+          tag: 5.0.0-beta.0
+          repository: nodered/node-red
+        strategy:
+          type: Recreate
         probes:
           startup:
             custom: false
+            type: TCP
+            enabled: true
             spec:
-              failureThreshold: 30
-              initialDelaySeconds: 0
               periodSeconds: 5
               timeoutSeconds: 1
-            enabled: true
-            type: TCP
-          liveness:
-            custom: false
-            spec:
-              failureThreshold: 3
               initialDelaySeconds: 0
-              periodSeconds: 10
-              timeoutSeconds: 1
-            enabled: true
-            type: TCP
+              failureThreshold: 30
           readiness:
             custom: false
+            type: TCP
+            enabled: true
             spec:
-              failureThreshold: 3
-              initialDelaySeconds: 0
               periodSeconds: 10
               timeoutSeconds: 1
-            enabled: true
+              initialDelaySeconds: 0
+              failureThreshold: 3
+          liveness:
+            custom: false
             type: TCP
-        strategy:
-          type: Recreate
-    strategy: Recreate
-    revisionHistoryLimit: 3
+            enabled: true
+            spec:
+              periodSeconds: 10
+              timeoutSeconds: 1
+              initialDelaySeconds: 0
+              failureThreshold: 3
+        env:
+          NODE_RED_ENABLE_SAFE_MODE: 
+          TZ: America/New_York
+          NODE_OPTIONS: 
+          FLOWS: flows.json
+          NODE_RED_ENABLE_PROJECTS: 
 
