@@ -1,89 +1,89 @@
-route:
-  main:
-    hostnames:
-    - nodered.mattgerega.net
-    kind: HTTPRoute
-    enabled: true
-    rules:
-    - backendRefs:
-      - group: ""
-        kind: Service
-        identifier: main
-        port: 1880
-        weight: 1
-      matches:
-      - path:
-          value: /
-          type: PathPrefix
-    parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      namespace: envoy-gateway-system
-      name: main
-service:
-  main:
-    ports:
-      http:
-        port: 1880
-        primary: true
-        enabled: true
-    primary: true
-    type: ClusterIP
-    controller: main
-persistence:
-  data:
-    accessMode: ReadWriteMany
-    storageClass: nfs-client
-    type: persistentVolumeClaim
-    enabled: true
-    size: 2Gi
 controllers:
   main:
+    revisionHistoryLimit: 3
     enabled: true
+    type: deployment
+    strategy: Recreate
+    replicas: 1
     containers:
       main:
+        strategy:
+          type: Recreate
         image:
-          repository: nodered/node-red
           pullPolicy: IfNotPresent
-          tag: 4.1.4
+          repository: nodered/node-red
+          tag: 4.1.5
         env:
           TZ: America/New_York
           NODE_RED_ENABLE_SAFE_MODE: 
-          FLOWS: flows.json
           NODE_RED_ENABLE_PROJECTS: 
           NODE_OPTIONS: 
-        strategy:
-          type: Recreate
+          FLOWS: flows.json
         probes:
-          startup:
-            enabled: true
-            custom: false
-            type: TCP
-            spec:
-              timeoutSeconds: 1
-              failureThreshold: 30
-              initialDelaySeconds: 0
-              periodSeconds: 5
           readiness:
-            enabled: true
             custom: false
-            type: TCP
             spec:
-              timeoutSeconds: 1
-              failureThreshold: 3
               initialDelaySeconds: 0
+              failureThreshold: 3
               periodSeconds: 10
+              timeoutSeconds: 1
+            type: TCP
+            enabled: true
           liveness:
-            enabled: true
             custom: false
-            type: TCP
             spec:
-              timeoutSeconds: 1
-              failureThreshold: 3
               initialDelaySeconds: 0
+              failureThreshold: 3
               periodSeconds: 10
-    strategy: Recreate
-    type: deployment
-    replicas: 1
-    revisionHistoryLimit: 3
+              timeoutSeconds: 1
+            type: TCP
+            enabled: true
+          startup:
+            custom: false
+            spec:
+              initialDelaySeconds: 0
+              failureThreshold: 30
+              periodSeconds: 5
+              timeoutSeconds: 1
+            type: TCP
+            enabled: true
+route:
+  main:
+    kind: HTTPRoute
+    parentRefs:
+    - group: gateway.networking.k8s.io
+      namespace: envoy-gateway-system
+      kind: Gateway
+      name: main
+    enabled: true
+    rules:
+    - matches:
+      - path:
+          type: PathPrefix
+          value: /
+      backendRefs:
+      - weight: 1
+        kind: Service
+        identifier: main
+        group: ""
+        port: 1880
+    hostnames:
+    - nodered.mattgerega.net
+persistence:
+  data:
+    accessMode: ReadWriteMany
+    enabled: true
+    type: persistentVolumeClaim
+    size: 2Gi
+    storageClass: nfs-client
+service:
+  main:
+    type: ClusterIP
+    controller: main
+    primary: true
+    ports:
+      http:
+        enabled: true
+        primary: true
+        port: 1880
 
