@@ -1,11 +1,11 @@
-name: wp-mattgerega-bjws
-apiVersion: v2
 type: application
+version: 5.0.0
+apiVersion: v2
+name: wp-mattgerega-bjws
 dependencies:
 - name: common
   repository: https://bjw-s-labs.github.io/helm-charts
-  version: 4.6.2
+  version: 5.0.0
 appVersion: 6.9.0
-version: 4.6.2
 
 
