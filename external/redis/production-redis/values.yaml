@@ -200,7 +200,7 @@ controllers:
             memory: 50Mi
     enabled: true
     type: statefulset
-    revisionHistoryLimit: 10
+    revisionHistoryLimit: 3
     replicas: 1
     pod:
       securityContext:

@@ -10,6 +10,7 @@ controllers:
     enabled: true
     type: deployment
     replicas: 1
+    revisionHistoryLimit: 3
     strategy: RollingUpdate
 
     pod:
@@ -92,6 +93,7 @@ controllers:
     enabled: true
     type: statefulset
     replicas: 1
+    revisionHistoryLimit: 3
 
     pod:
       securityContext:
