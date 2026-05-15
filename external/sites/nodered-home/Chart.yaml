@@ -1,12 +1,12 @@
 dependencies:
-- version: 5.0.0
-  name: common
+- name: common
   repository: https://bjw-s-labs.github.io/helm-charts
-type: application
-appVersion: 3.0.2-18
+  version: 5.0.1
 apiVersion: v2
-version: 5.0.0
-name: nodered-home
+type: application
+version: 5.0.1
+appVersion: 3.0.2-18
 description: Node Red Helm Chart
+name: nodered-home
 
 
