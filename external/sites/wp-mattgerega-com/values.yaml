@@ -22,7 +22,7 @@ controllers:
       main:
         image:
           repository: docker.io/wordpress
-          tag: 6.9.1-apache
+          tag: 7.0.0-apache
           pullPolicy: IfNotPresent
 
         env:
