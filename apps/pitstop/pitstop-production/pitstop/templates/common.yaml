@@ -1,0 +1,279 @@
+---
+# Source: pitstop/templates/common.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pitstop-app-common
+  labels:
+    app.kubernetes.io/instance: pitstop-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop-app
+    app.kubernetes.io/version: 2.0.1
+    helm.sh/chart: pitstop-2.0.1
+  namespace: pitstop-production
+data:
+  Auth__Audience: pitstop-data-api
+  Auth__Authority: https://auth.mattgerega.com
+  Logging__LogLevel__Default: Warning
+  Telemetry__Log__Otlp__Endpoint: http://production-grafana-alloy.grafana.svc.cluster.local:4317
+  Telemetry__Metrics__Otlp__Endpoint: http://production-grafana-alloy.grafana.svc.cluster.local:4317
+  Telemetry__Trace__Otlp__Endpoint: http://production-grafana-alloy.grafana.svc.cluster.local:4317
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pitstop-app-data-api
+  labels:
+    app.kubernetes.io/instance: pitstop-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop-app
+    app.kubernetes.io/version: 2.0.1
+    helm.sh/chart: pitstop-2.0.1
+  namespace: pitstop-production
+data:
+  Telemetry__ActivitySourceName: PitStop.Data.Activity
+  Telemetry__MeterName: PitStop.Data.Meter
+  Telemetry__ServiceName: PitStop.Data
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pitstop-app-web
+  labels:
+    app.kubernetes.io/instance: pitstop-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop-app
+    app.kubernetes.io/version: 2.0.1
+    helm.sh/chart: pitstop-2.0.1
+  namespace: pitstop-production
+data:
+  Telemetry__ActivitySourceName: PitStop.Web.Activity
+  Telemetry__MeterName: PitStop.Web.Meter
+  Telemetry__ServiceName: PitStop.Web
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: pitstop-app-web
+  labels:
+    app.kubernetes.io/instance: pitstop-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop-app
+    app.kubernetes.io/service: pitstop-app-web
+    app.kubernetes.io/version: 2.0.1
+    helm.sh/chart: pitstop-2.0.1
+  namespace: pitstop-production
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: web
+    app.kubernetes.io/instance: pitstop-app
+    app.kubernetes.io/name: pitstop-app
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: pitstop-app-data-api
+  labels:
+    app.kubernetes.io/instance: pitstop-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop-app
+    app.kubernetes.io/service: pitstop-app-data-api
+    app.kubernetes.io/version: 2.0.1
+    helm.sh/chart: pitstop-2.0.1
+  namespace: pitstop-production
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: data-api
+    app.kubernetes.io/instance: pitstop-app
+    app.kubernetes.io/name: pitstop-app
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pitstop-app-data-api
+  labels:
+    app.kubernetes.io/controller: data-api
+    app.kubernetes.io/instance: pitstop-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop-app
+    app.kubernetes.io/version: 2.0.1
+    helm.sh/chart: pitstop-2.0.1
+  namespace: pitstop-production
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: data-api
+      app.kubernetes.io/name: pitstop-app
+      app.kubernetes.io/instance: pitstop-app
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: a9e2b1413b3947c01f02b5f806931e51853261aae3857546767ef393e4643d30
+      labels: 
+        app.kubernetes.io/controller: data-api
+        app.kubernetes.io/instance: pitstop-app
+        app.kubernetes.io/name: pitstop-app
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - secretRef:
+              name: data-api-secrets
+          - configMapRef:
+              name: pitstop-app-common
+          - configMapRef:
+              name: pitstop-app-data-api
+          image: ghcr.io/spydersoft-consulting/pitstop-data-api:2.0.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pitstop-app-web
+  labels:
+    app.kubernetes.io/controller: web
+    app.kubernetes.io/instance: pitstop-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop-app
+    app.kubernetes.io/version: 2.0.1
+    helm.sh/chart: pitstop-2.0.1
+  namespace: pitstop-production
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: web
+      app.kubernetes.io/name: pitstop-app
+      app.kubernetes.io/instance: pitstop-app
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: a9e2b1413b3947c01f02b5f806931e51853261aae3857546767ef393e4643d30
+      labels: 
+        app.kubernetes.io/controller: web
+        app.kubernetes.io/instance: pitstop-app
+        app.kubernetes.io/name: pitstop-app
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - env:
+          - name: OidcProxySettings__ReverseProxy__Clusters__pitstopApi__Destinations__destination1__Address
+            value: http://pitstop-app-data-api/
+          envFrom:
+          - secretRef:
+              name: web-secrets
+          - configMapRef:
+              name: pitstop-app-common
+          - configMapRef:
+              name: pitstop-app-web
+          image: ghcr.io/spydersoft-consulting/pitstop-web:2.0.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: pitstop-app
+  labels:
+    app.kubernetes.io/instance: pitstop-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop-app
+    app.kubernetes.io/version: 2.0.1
+    helm.sh/chart: pitstop-2.0.1
+  namespace: pitstop-production
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "pitstop.mattgerega.com"
+  rules:
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: pitstop-app-web
+        namespace: pitstop-production
+        port: 80
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
