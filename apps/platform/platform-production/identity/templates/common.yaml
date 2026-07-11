@@ -4,26 +4,6 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: identity-app-identity
-  labels:
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.1.5
-    helm.sh/chart: identity-3.1.5
-  namespace: platform-production
-data:
-  AllowedOrigins__0: https://*.mattgerega.com
-  Identity__AuthorityUrl: https://auth.mattgerega.com
-  Serilog__MinimumLevel__Default: Warning
-  Telemetry__Log__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
-  Telemetry__Metrics__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
-  Telemetry__Trace__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
----
-# Source: identity/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: identity-app-admin-api
   labels:
     app.kubernetes.io/instance: identity-app
@@ -64,6 +44,51 @@ data:
   Telemetry__Metrics__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
   Telemetry__ServiceName: Identity.Admin.Ui.Production
   Telemetry__Trace__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
+---
+# Source: identity/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: identity-app-identity
+  labels:
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-app
+    app.kubernetes.io/version: 3.1.5
+    helm.sh/chart: identity-3.1.5
+  namespace: platform-production
+data:
+  AllowedOrigins__0: https://*.mattgerega.com
+  Identity__AuthorityUrl: https://auth.mattgerega.com
+  Serilog__MinimumLevel__Default: Warning
+  Telemetry__Log__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
+  Telemetry__Metrics__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
+  Telemetry__Trace__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
+---
+# Source: identity/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-app-main
+  labels:
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-app
+    app.kubernetes.io/service: identity-app-main
+    app.kubernetes.io/version: 3.1.5
+    helm.sh/chart: identity-3.1.5
+  namespace: platform-production
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: main
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/name: identity-app
 ---
 # Source: identity/templates/common.yaml
 apiVersion: v1
@@ -116,29 +141,74 @@ spec:
     app.kubernetes.io/name: identity-app
 ---
 # Source: identity/templates/common.yaml
-apiVersion: v1
-kind: Service
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: identity-app-main
+  name: identity-app-admin-frontend
   labels:
+    app.kubernetes.io/controller: admin-frontend
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/service: identity-app-main
     app.kubernetes.io/version: 3.1.5
     helm.sh/chart: identity-3.1.5
   namespace: platform-production
 spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
   selector:
-    app.kubernetes.io/controller: main
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/name: identity-app
+    matchLabels:
+      app.kubernetes.io/controller: admin-frontend
+      app.kubernetes.io/name: identity-app
+      app.kubernetes.io/instance: identity-app
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: b1115b4e51aa0c7e4c24e85a017c9a40bab75a3ec5c57def03c43e5a7337e67f
+      labels: 
+        app.kubernetes.io/controller: admin-frontend
+        app.kubernetes.io/instance: identity-app
+        app.kubernetes.io/name: identity-app
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - env:
+          - name: OidcProxySettings__ReverseProxy__Clusters__adminApi__Destinations__destination1__Address
+            value: http://identity-app-admin-api/
+          envFrom:
+          - configMapRef:
+              name: identity-app-admin-ui
+          - secretRef:
+              name: identity-server-admin-ui-secrets
+          image: ghcr.io/spyder007/identity_admin_frontend:3.1.5
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
 ---
 # Source: identity/templates/common.yaml
 apiVersion: apps/v1
@@ -260,76 +330,6 @@ spec:
           - secretRef:
               name: identity-server-admin-api-secrets
           image: ghcr.io/spyder007/identity_admin_api:3.1.5
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /livez
-              port: 8080
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 1
-          name: main
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /readyz
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            timeoutSeconds: 1
----
-# Source: identity/templates/common.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: identity-app-admin-frontend
-  labels:
-    app.kubernetes.io/controller: admin-frontend
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.1.5
-    helm.sh/chart: identity-3.1.5
-  namespace: platform-production
-spec:
-  revisionHistoryLimit: 1
-  replicas: 1
-  strategy:
-    type: RollingUpdate
-  selector:
-    matchLabels:
-      app.kubernetes.io/controller: admin-frontend
-      app.kubernetes.io/name: identity-app
-      app.kubernetes.io/instance: identity-app
-  template:
-    metadata:
-      annotations: 
-        checksum/configMaps: b1115b4e51aa0c7e4c24e85a017c9a40bab75a3ec5c57def03c43e5a7337e67f
-      labels: 
-        app.kubernetes.io/controller: admin-frontend
-        app.kubernetes.io/instance: identity-app
-        app.kubernetes.io/name: identity-app
-    spec: 
-      enableServiceLinks: false
-      serviceAccountName: default
-      automountServiceAccountToken: true
-      hostIPC: false
-      hostNetwork: false
-      hostPID: false
-      dnsPolicy: ClusterFirst
-      imagePullSecrets: 
-        - name: cr-spydersoft-github
-      containers: 
-        - env:
-          - name: OidcProxySettings__ReverseProxy__Clusters__adminApi__Destinations__destination1__Address
-            value: http://identity-app-admin-api/
-          envFrom:
-          - configMapRef:
-              name: identity-app-admin-ui
-          - secretRef:
-              name: identity-server-admin-ui-secrets
-          image: ghcr.io/spyder007/identity_admin_frontend:3.1.5
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
