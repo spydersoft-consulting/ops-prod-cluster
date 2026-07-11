@@ -120,80 +120,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: identity-server-postgres
-  labels:
-    app.kubernetes.io/controller: postgres
-    app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-server
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: identity-server-0.1.0
-  namespace: platform-production
-spec:
-  revisionHistoryLimit: 1
-  replicas: 1
-  strategy:
-    type: Recreate
-  selector:
-    matchLabels:
-      app.kubernetes.io/controller: postgres
-      app.kubernetes.io/name: identity-server
-      app.kubernetes.io/instance: identity-server
-  template:
-    metadata:
-      annotations: 
-        checksum/configMaps: 437248e113ff8eabcc72d3a5a182af10baef76c85abf4e4a1b1c5135b48342ff
-      labels: 
-        app.kubernetes.io/controller: postgres
-        app.kubernetes.io/instance: identity-server
-        app.kubernetes.io/name: identity-server
-    spec: 
-      enableServiceLinks: false
-      serviceAccountName: default
-      automountServiceAccountToken: true
-      hostIPC: false
-      hostNetwork: false
-      hostPID: false
-      dnsPolicy: ClusterFirst
-      imagePullSecrets: 
-        - name: cr-spydersoft-github
-      containers: 
-        - env:
-          - name: POSTGRES_PORT
-            value: "5432"
-          - name: POSTGRES_HOST
-            value: postgres-service
-          - name: POSTGRES_DB
-            value: identity
-          envFrom:
-          - secretRef:
-              name: postgres-secrets
-          image: postgres:17
-          imagePullPolicy: IfNotPresent
-          name: main
-          volumeMounts:
-          - mountPath: /var/lib/postgresql/data
-            name: postgres-data
-          - mountPath: /docker-entrypoint-initdb.d/init-identity-user.sh
-            name: postgres-init-data
-            subPath: init-data.sh
-          - mountPath: /postgres-secrets
-            name: postgres-secrets
-      volumes: 
-        - name: postgres-data
-          persistentVolumeClaim:
-            claimName: identity-server
-        - configMap:
-            name: identity-server-postgres-init-data
-          name: postgres-init-data
-        - name: postgres-secrets
-          secret:
-            secretName: postgres-secrets
----
-# Source: identity-server/templates/common.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: identity-server-main
   labels:
     app.kubernetes.io/controller: main
@@ -260,6 +186,80 @@ spec:
           - mountPath: /postgres-secrets
             name: postgres-secrets
       volumes: 
+        - name: postgres-secrets
+          secret:
+            secretName: postgres-secrets
+---
+# Source: identity-server/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-server-postgres
+  labels:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: platform-production
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: postgres
+      app.kubernetes.io/name: identity-server
+      app.kubernetes.io/instance: identity-server
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: 437248e113ff8eabcc72d3a5a182af10baef76c85abf4e4a1b1c5135b48342ff
+      labels: 
+        app.kubernetes.io/controller: postgres
+        app.kubernetes.io/instance: identity-server
+        app.kubernetes.io/name: identity-server
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - env:
+          - name: POSTGRES_PORT
+            value: "5432"
+          - name: POSTGRES_HOST
+            value: postgres-service
+          - name: POSTGRES_DB
+            value: identity
+          envFrom:
+          - secretRef:
+              name: postgres-secrets
+          image: postgres:17
+          imagePullPolicy: IfNotPresent
+          name: main
+          volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgres-data
+          - mountPath: /docker-entrypoint-initdb.d/init-identity-user.sh
+            name: postgres-init-data
+            subPath: init-data.sh
+          - mountPath: /postgres-secrets
+            name: postgres-secrets
+      volumes: 
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: identity-server
+        - configMap:
+            name: identity-server-postgres-init-data
+          name: postgres-init-data
         - name: postgres-secrets
           secret:
             secretName: postgres-secrets
