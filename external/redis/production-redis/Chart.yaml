@@ -1,8 +1,8 @@
-version: 5.0.1
-apiVersion: v2
-name: production-redis
 type: application
+apiVersion: v2
 appVersion: 7.4.0-v7
+version: 5.0.1
+name: production-redis
 dependencies:
 - name: common
   version: 5.0.1
