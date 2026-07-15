@@ -5,6 +5,9 @@ metadata:
   namespace: kube-system
 spec:
   valuesContent: |-
+    resources:
+      requests:
+        cpu: 5m
     servers:
     - zones:
       - zone: .
