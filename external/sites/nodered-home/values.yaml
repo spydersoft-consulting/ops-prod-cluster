@@ -45,6 +45,9 @@ controllers:
           pullPolicy: IfNotPresent
           tag: 5.0.1
           repository: nodered/node-red
+        resources:
+          requests:
+            cpu: 5m
         strategy:
           type: Recreate
 service:
