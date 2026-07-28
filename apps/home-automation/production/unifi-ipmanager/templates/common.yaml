@@ -4,30 +4,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: unifi-ipmanager-app-ipmanager
-  labels:
-    app.kubernetes.io/instance: unifi-ipmanager-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.1-beta.136
-    helm.sh/chart: unifi-ipmanager-1.1.1-beta.136
-  namespace: production
-data:
-  Identity__ApiName: unifi.ipmanager
-  UnifiControllerOptions__DnsZone: gerega.net
-  UnifiControllerOptions__Url: https://unifi.gerega.net
----
-# Source: unifi-ipmanager/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: unifi-ipmanager-app-config-js
   labels:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.1-beta.136
-    helm.sh/chart: unifi-ipmanager-1.1.1-beta.136
+    app.kubernetes.io/version: 1.1.1
+    helm.sh/chart: unifi-ipmanager-1.1.1
   namespace: production
 data:
   config.js: |
@@ -43,28 +26,20 @@ data:
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: v1
-kind: Service
+kind: ConfigMap
 metadata:
-  name: unifi-ipmanager-app-api
+  name: unifi-ipmanager-app-ipmanager
   labels:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/service: unifi-ipmanager-app-api
-    app.kubernetes.io/version: 1.1.1-beta.136
-    helm.sh/chart: unifi-ipmanager-1.1.1-beta.136
+    app.kubernetes.io/version: 1.1.1
+    helm.sh/chart: unifi-ipmanager-1.1.1
   namespace: production
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: api
-    app.kubernetes.io/instance: unifi-ipmanager-app
-    app.kubernetes.io/name: unifi-ipmanager-app
+data:
+  Identity__ApiName: unifi.ipmanager
+  UnifiControllerOptions__DnsZone: gerega.net
+  UnifiControllerOptions__Url: https://unifi.gerega.net
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: v1
@@ -76,8 +51,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
     app.kubernetes.io/service: unifi-ipmanager-app-frontend
-    app.kubernetes.io/version: 1.1.1-beta.136
-    helm.sh/chart: unifi-ipmanager-1.1.1-beta.136
+    app.kubernetes.io/version: 1.1.1
+    helm.sh/chart: unifi-ipmanager-1.1.1
   namespace: production
 spec:
   type: ClusterIP
@@ -92,6 +67,31 @@ spec:
     app.kubernetes.io/name: unifi-ipmanager-app
 ---
 # Source: unifi-ipmanager/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-ipmanager-app-api
+  labels:
+    app.kubernetes.io/instance: unifi-ipmanager-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: unifi-ipmanager-app
+    app.kubernetes.io/service: unifi-ipmanager-app-api
+    app.kubernetes.io/version: 1.1.1
+    helm.sh/chart: unifi-ipmanager-1.1.1
+  namespace: production
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: api
+    app.kubernetes.io/instance: unifi-ipmanager-app
+    app.kubernetes.io/name: unifi-ipmanager-app
+---
+# Source: unifi-ipmanager/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -101,8 +101,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.1-beta.136
-    helm.sh/chart: unifi-ipmanager-1.1.1-beta.136
+    app.kubernetes.io/version: 1.1.1
+    helm.sh/chart: unifi-ipmanager-1.1.1
   namespace: production
 spec:
   revisionHistoryLimit: 1
@@ -140,7 +140,7 @@ spec:
               name: unifi-ipmanager-app-ipmanager
           - secretRef:
               name: unifi-secrets
-          image: ghcr.io/spyder007/unifi-ipmanager:1.1.1-beta.136
+          image: ghcr.io/spyder007/unifi-ipmanager:1.1.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -159,6 +159,9 @@ spec:
             initialDelaySeconds: 0
             periodSeconds: 10
             timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 5m
           volumeMounts:
           - mountPath: /usr/share/nginx/html/config.js
             name: config-js
@@ -178,8 +181,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.1-beta.136
-    helm.sh/chart: unifi-ipmanager-1.1.1-beta.136
+    app.kubernetes.io/version: 1.1.1
+    helm.sh/chart: unifi-ipmanager-1.1.1
   namespace: production
 spec:
   revisionHistoryLimit: 1
@@ -210,9 +213,12 @@ spec:
       imagePullSecrets: 
         - name: cr-spydersoft-github
       containers: 
-        - image: ghcr.io/spyder007/unifi-client:1.1.1-beta.136
+        - image: ghcr.io/spyder007/unifi-client:1.1.1
           imagePullPolicy: IfNotPresent
           name: main
+          resources:
+            requests:
+              cpu: 5m
           volumeMounts:
           - mountPath: /usr/share/nginx/html/config.js
             name: config-js
@@ -231,8 +237,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.1-beta.136
-    helm.sh/chart: unifi-ipmanager-1.1.1-beta.136
+    app.kubernetes.io/version: 1.1.1
+    helm.sh/chart: unifi-ipmanager-1.1.1
   namespace: production
 spec:
   parentRefs:
@@ -270,8 +276,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.1-beta.136
-    helm.sh/chart: unifi-ipmanager-1.1.1-beta.136
+    app.kubernetes.io/version: 1.1.1
+    helm.sh/chart: unifi-ipmanager-1.1.1
   namespace: production
 spec:
   parentRefs:
