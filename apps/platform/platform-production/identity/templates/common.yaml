@@ -4,6 +4,26 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: identity-app-identity
+  labels:
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-app
+    app.kubernetes.io/version: 3.1.6
+    helm.sh/chart: identity-3.1.6
+  namespace: platform-production
+data:
+  AllowedOrigins__0: https://*.mattgerega.com
+  Identity__AuthorityUrl: https://auth.mattgerega.com
+  Serilog__MinimumLevel__Default: Warning
+  Telemetry__Log__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
+  Telemetry__Metrics__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
+  Telemetry__Trace__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
+---
+# Source: identity/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: identity-app-admin-api
   labels:
     app.kubernetes.io/instance: identity-app
@@ -43,26 +63,6 @@ data:
   Telemetry__MeterName: Identity.Admin.Ui.Production.Meter
   Telemetry__Metrics__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
   Telemetry__ServiceName: Identity.Admin.Ui.Production
-  Telemetry__Trace__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
----
-# Source: identity/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: identity-app-identity
-  labels:
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.1.6
-    helm.sh/chart: identity-3.1.6
-  namespace: platform-production
-data:
-  AllowedOrigins__0: https://*.mattgerega.com
-  Identity__AuthorityUrl: https://auth.mattgerega.com
-  Serilog__MinimumLevel__Default: Warning
-  Telemetry__Log__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
-  Telemetry__Metrics__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
   Telemetry__Trace__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
 ---
 # Source: identity/templates/common.yaml
