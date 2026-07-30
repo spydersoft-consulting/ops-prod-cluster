@@ -14,6 +14,6 @@ data:
   AllowedOrigins__0: https://uni.mattgerega.com
   Identity__Authority: https://auth.mattgerega.com
   Identity__AuthorityUrl: ""
-  Telemetry__Log__Otlp__Endpoint: http://production-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Metrics__Otlp__Endpoint: http://production-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Trace__Otlp__Endpoint: http://production-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Log__Otlp__Endpoint: http://production-grafana-alloy.grafana.svc.cluster.local:4317
+  Telemetry__Metrics__Otlp__Endpoint: http://production-grafana-alloy.grafana.svc.cluster.local:4317
+  Telemetry__Trace__Otlp__Endpoint: http://production-grafana-alloy.grafana.svc.cluster.local:4317
