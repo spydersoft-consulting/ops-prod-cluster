@@ -1,6 +1,6 @@
 dependencies:
 - name: apim3
   repository: https://helm.gravitee.io
-  version: 4.12.17
-digest: sha256:77b2ce0ceae0d999623d2cbe3f130a6d229edf306c4ad99c88013b12c0a127eb
-generated: "2026-08-24T08:03:38.953105102Z"
+  version: 4.12.18
+digest: sha256:08ba22c55a372d15fc25dad1a44ea78841ea10e519d10f450ccb39d488758c43
+generated: "2026-09-01T08:03:54.284536539Z"
