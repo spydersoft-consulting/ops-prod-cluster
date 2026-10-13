@@ -18,6 +18,8 @@ spec:
         OidcProxySettings__Oidc__Authority: "{{ .authority }}"
         OidcProxySettings__Oidc__ClientId: "{{ .client_id }}"
         OidcProxySettings__Oidc__ClientSecret: "{{ .client_secret }}"
+        AddressLookup__GooglePlacesApiKey: "{{ .google_places_api_key }}"
+        Redis__ConnectionString: "{{ .redis_host }}:6379,password={{ .redis_password }},abortConnect=false"
 
   data:
   - secretKey: authority
@@ -32,3 +34,15 @@ spec:
     remoteRef:
       key: secrets-k8/pitstop/production/auth
       property: client_secret
+  - secretKey: google_places_api_key
+    remoteRef:
+      key: secrets-k8/pitstop/production/google-places
+      property: api_key
+  - secretKey: redis_host
+    remoteRef:
+      key: secrets-k8/redis/production
+      property: host
+  - secretKey: redis_password
+    remoteRef:
+      key: secrets-k8/redis/production
+      property: password
