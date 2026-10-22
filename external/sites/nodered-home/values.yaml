@@ -1,92 +1,92 @@
-persistence:
-  data:
-    size: 2Gi
-    type: persistentVolumeClaim
-    accessMode: ReadWriteMany
+controllers:
+  main:
+    type: deployment
+    revisionHistoryLimit: 3
+    strategy: Recreate
     enabled: true
-    storageClass: nfs-client
+    replicas: 1
+    containers:
+      main:
+        resources:
+          requests:
+            cpu: 5m
+        strategy:
+          type: Recreate
+        image:
+          tag: 5.0.9
+          repository: nodered/node-red
+          pullPolicy: IfNotPresent
+        env:
+          NODE_RED_ENABLE_PROJECTS: 
+          FLOWS: flows.json
+          NODE_RED_ENABLE_SAFE_MODE: 
+          NODE_OPTIONS: 
+          TZ: America/New_York
+        probes:
+          readiness:
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+            enabled: true
+            custom: false
+            type: TCP
+          startup:
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 5
+              timeoutSeconds: 1
+              failureThreshold: 30
+            enabled: true
+            custom: false
+            type: TCP
+          liveness:
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+            enabled: true
+            custom: false
+            type: TCP
 service:
   main:
     primary: true
+    controller: main
     ports:
       http:
         primary: true
         port: 1880
         enabled: true
     type: ClusterIP
-    controller: main
 route:
   main:
     rules:
-    - backendRefs:
-      - identifier: main
-        weight: 1
-        port: 1880
-        group: ""
-        kind: Service
-      matches:
+    - matches:
       - path:
           value: /
           type: PathPrefix
+      backendRefs:
+      - port: 1880
+        weight: 1
+        identifier: main
+        kind: Service
+        group: ""
+    kind: HTTPRoute
     hostnames:
     - nodered.mattgerega.net
-    kind: HTTPRoute
-    enabled: true
     parentRefs:
-    - kind: Gateway
-      name: main
-      namespace: envoy-gateway-system
+    - name: main
       group: gateway.networking.k8s.io
-controllers:
-  main:
-    replicas: 1
+      kind: Gateway
+      namespace: envoy-gateway-system
     enabled: true
-    type: deployment
-    containers:
-      main:
-        image:
-          tag: 5.0.8
-          repository: nodered/node-red
-          pullPolicy: IfNotPresent
-        resources:
-          requests:
-            cpu: 5m
-        probes:
-          liveness:
-            type: TCP
-            custom: false
-            spec:
-              initialDelaySeconds: 0
-              timeoutSeconds: 1
-              periodSeconds: 10
-              failureThreshold: 3
-            enabled: true
-          readiness:
-            type: TCP
-            custom: false
-            spec:
-              initialDelaySeconds: 0
-              timeoutSeconds: 1
-              periodSeconds: 10
-              failureThreshold: 3
-            enabled: true
-          startup:
-            type: TCP
-            custom: false
-            spec:
-              initialDelaySeconds: 0
-              timeoutSeconds: 1
-              periodSeconds: 5
-              failureThreshold: 30
-            enabled: true
-        env:
-          FLOWS: flows.json
-          TZ: America/New_York
-          NODE_RED_ENABLE_SAFE_MODE: 
-          NODE_OPTIONS: 
-          NODE_RED_ENABLE_PROJECTS: 
-        strategy:
-          type: Recreate
-    revisionHistoryLimit: 3
-    strategy: Recreate
+persistence:
+  data:
+    accessMode: ReadWriteMany
+    type: persistentVolumeClaim
+    storageClass: nfs-client
+    enabled: true
+    size: 2Gi
 

@@ -1,12 +1,12 @@
-name: nodered-home
-apiVersion: v2
-version: 5.1.0
-appVersion: 3.0.2-18
 type: application
+version: 5.1.0
 dependencies:
 - name: common
   repository: oci://ghcr.io/bjw-s-labs/helm
   version: 5.2.0
+apiVersion: v2
+appVersion: 3.0.2-18
+name: nodered-home
 description: Node Red Helm Chart
 
 
