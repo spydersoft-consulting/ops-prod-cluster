@@ -60,6 +60,7 @@ metadata:
 data:
   AllowedOrigins__0: https://*.mattgerega.com
   Identity__AuthorityUrl: https://auth.mattgerega.com
+  IdentityServer__AdminUrl: https://auth-admin.mattgerega.com
   Serilog__MinimumLevel__Default: Warning
   Telemetry__Log__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
   Telemetry__Metrics__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
@@ -166,7 +167,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: b1115b4e51aa0c7e4c24e85a017c9a40bab75a3ec5c57def03c43e5a7337e67f
+        checksum/configMaps: edd6058d915f58366d71a68f71f5b13ba0a623c69b5e39bf8e350afdd3375f71
       labels: 
         app.kubernetes.io/controller: admin-api
         app.kubernetes.io/instance: identity-app
@@ -236,7 +237,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: b1115b4e51aa0c7e4c24e85a017c9a40bab75a3ec5c57def03c43e5a7337e67f
+        checksum/configMaps: edd6058d915f58366d71a68f71f5b13ba0a623c69b5e39bf8e350afdd3375f71
       labels: 
         app.kubernetes.io/controller: admin-frontend
         app.kubernetes.io/instance: identity-app
@@ -309,7 +310,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: b1115b4e51aa0c7e4c24e85a017c9a40bab75a3ec5c57def03c43e5a7337e67f
+        checksum/configMaps: edd6058d915f58366d71a68f71f5b13ba0a623c69b5e39bf8e350afdd3375f71
       labels: 
         app.kubernetes.io/controller: main
         app.kubernetes.io/instance: identity-app
