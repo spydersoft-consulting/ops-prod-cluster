@@ -9,8 +9,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.3.0
-    helm.sh/chart: identity-3.3.0
+    app.kubernetes.io/version: 3.4.0
+    helm.sh/chart: identity-3.4.0
   namespace: platform-production
 data:
   IdentityServer__Authority: https://auth.mattgerega.com
@@ -31,8 +31,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.3.0
-    helm.sh/chart: identity-3.3.0
+    app.kubernetes.io/version: 3.4.0
+    helm.sh/chart: identity-3.4.0
   namespace: platform-production
 data:
   OidcProxySettings__Oidc__Authority: https://auth.mattgerega.com
@@ -54,8 +54,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.3.0
-    helm.sh/chart: identity-3.3.0
+    app.kubernetes.io/version: 3.4.0
+    helm.sh/chart: identity-3.4.0
   namespace: platform-production
 data:
   AllowedOrigins__0: https://*.mattgerega.com
@@ -76,8 +76,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
     app.kubernetes.io/service: identity-app-admin-api
-    app.kubernetes.io/version: 3.3.0
-    helm.sh/chart: identity-3.3.0
+    app.kubernetes.io/version: 3.4.0
+    helm.sh/chart: identity-3.4.0
   namespace: platform-production
 spec:
   type: ClusterIP
@@ -101,8 +101,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
     app.kubernetes.io/service: identity-app-admin-frontend
-    app.kubernetes.io/version: 3.3.0
-    helm.sh/chart: identity-3.3.0
+    app.kubernetes.io/version: 3.4.0
+    helm.sh/chart: identity-3.4.0
   namespace: platform-production
 spec:
   type: ClusterIP
@@ -126,8 +126,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
     app.kubernetes.io/service: identity-app-main
-    app.kubernetes.io/version: 3.3.0
-    helm.sh/chart: identity-3.3.0
+    app.kubernetes.io/version: 3.4.0
+    helm.sh/chart: identity-3.4.0
   namespace: platform-production
 spec:
   type: ClusterIP
@@ -151,8 +151,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.3.0
-    helm.sh/chart: identity-3.3.0
+    app.kubernetes.io/version: 3.4.0
+    helm.sh/chart: identity-3.4.0
   namespace: platform-production
 spec:
   revisionHistoryLimit: 1
@@ -188,7 +188,7 @@ spec:
               name: identity-app-admin-api
           - secretRef:
               name: identity-server-admin-api-secrets
-          image: ghcr.io/spyder007/identity_admin_api:3.3.0
+          image: ghcr.io/spyder007/identity_admin_api:3.4.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -221,8 +221,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.3.0
-    helm.sh/chart: identity-3.3.0
+    app.kubernetes.io/version: 3.4.0
+    helm.sh/chart: identity-3.4.0
   namespace: platform-production
 spec:
   revisionHistoryLimit: 1
@@ -261,7 +261,7 @@ spec:
               name: identity-app-admin-ui
           - secretRef:
               name: identity-server-admin-ui-secrets
-          image: ghcr.io/spyder007/identity_admin_frontend:3.3.0
+          image: ghcr.io/spyder007/identity_admin_frontend:3.4.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -294,8 +294,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.3.0
-    helm.sh/chart: identity-3.3.0
+    app.kubernetes.io/version: 3.4.0
+    helm.sh/chart: identity-3.4.0
   namespace: platform-production
 spec:
   revisionHistoryLimit: 1
@@ -331,7 +331,7 @@ spec:
               name: identity-app-identity
           - secretRef:
               name: identity-server-secrets
-          image: ghcr.io/spyder007/identity_server:3.3.0
+          image: ghcr.io/spyder007/identity_server:3.4.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -363,46 +363,13 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: identity-app-admin-api
-  labels:
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.3.0
-    helm.sh/chart: identity-3.3.0
-  namespace: platform-production
-spec:
-  parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: main
-      namespace: envoy-gateway-system
-  hostnames:
-    - "auth-admin-api.mattgerega.com"
-  rules:
-    - backendRefs:
-      - group: ""
-        kind: Service
-        name: identity-app-admin-api
-        namespace: platform-production
-        port: 80
-        weight: 1
-      matches:
-        - path:
-            type: PathPrefix
-            value: /
----
-# Source: identity/templates/common.yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
   name: identity-app-admin-frontend
   labels:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.3.0
-    helm.sh/chart: identity-3.3.0
+    app.kubernetes.io/version: 3.4.0
+    helm.sh/chart: identity-3.4.0
   namespace: platform-production
 spec:
   parentRefs:
@@ -434,8 +401,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.3.0
-    helm.sh/chart: identity-3.3.0
+    app.kubernetes.io/version: 3.4.0
+    helm.sh/chart: identity-3.4.0
   namespace: platform-production
 spec:
   parentRefs:
@@ -450,6 +417,39 @@ spec:
       - group: ""
         kind: Service
         name: identity-app-main
+        namespace: platform-production
+        port: 80
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+---
+# Source: identity/templates/common.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: identity-app-admin-api
+  labels:
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-app
+    app.kubernetes.io/version: 3.4.0
+    helm.sh/chart: identity-3.4.0
+  namespace: platform-production
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "auth-admin-api.mattgerega.com"
+  rules:
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: identity-app-admin-api
         namespace: platform-production
         port: 80
         weight: 1
