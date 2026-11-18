@@ -2,91 +2,91 @@ controllers:
   main:
     type: deployment
     revisionHistoryLimit: 3
-    strategy: Recreate
-    enabled: true
     replicas: 1
     containers:
       main:
+        probes:
+          liveness:
+            spec:
+              initialDelaySeconds: 0
+              timeoutSeconds: 1
+              failureThreshold: 3
+              periodSeconds: 10
+            type: TCP
+            custom: false
+            enabled: true
+          startup:
+            spec:
+              initialDelaySeconds: 0
+              timeoutSeconds: 1
+              failureThreshold: 30
+              periodSeconds: 5
+            type: TCP
+            custom: false
+            enabled: true
+          readiness:
+            spec:
+              initialDelaySeconds: 0
+              timeoutSeconds: 1
+              failureThreshold: 3
+              periodSeconds: 10
+            type: TCP
+            custom: false
+            enabled: true
         resources:
           requests:
             cpu: 5m
-        strategy:
-          type: Recreate
         image:
-          tag: 5.0.9
-          repository: nodered/node-red
           pullPolicy: IfNotPresent
+          tag: 5.0.10
+          repository: nodered/node-red
         env:
           NODE_RED_ENABLE_PROJECTS: 
           FLOWS: flows.json
           NODE_RED_ENABLE_SAFE_MODE: 
           NODE_OPTIONS: 
           TZ: America/New_York
-        probes:
-          readiness:
-            spec:
-              initialDelaySeconds: 0
-              periodSeconds: 10
-              timeoutSeconds: 1
-              failureThreshold: 3
-            enabled: true
-            custom: false
-            type: TCP
-          startup:
-            spec:
-              initialDelaySeconds: 0
-              periodSeconds: 5
-              timeoutSeconds: 1
-              failureThreshold: 30
-            enabled: true
-            custom: false
-            type: TCP
-          liveness:
-            spec:
-              initialDelaySeconds: 0
-              periodSeconds: 10
-              timeoutSeconds: 1
-              failureThreshold: 3
-            enabled: true
-            custom: false
-            type: TCP
+        strategy:
+          type: Recreate
+    enabled: true
+    strategy: Recreate
 service:
   main:
     primary: true
-    controller: main
+    type: ClusterIP
     ports:
       http:
         primary: true
         port: 1880
         enabled: true
-    type: ClusterIP
+    controller: main
 route:
   main:
-    rules:
-    - matches:
-      - path:
-          value: /
-          type: PathPrefix
-      backendRefs:
-      - port: 1880
-        weight: 1
-        identifier: main
-        kind: Service
-        group: ""
+    parentRefs:
+    - kind: Gateway
+      namespace: envoy-gateway-system
+      group: gateway.networking.k8s.io
+      name: main
     kind: HTTPRoute
     hostnames:
     - nodered.mattgerega.net
-    parentRefs:
-    - name: main
-      group: gateway.networking.k8s.io
-      kind: Gateway
-      namespace: envoy-gateway-system
     enabled: true
+    rules:
+    - backendRefs:
+      - weight: 1
+        identifier: main
+        kind: Service
+        group: ""
+        port: 1880
+      matches:
+      - path:
+          type: PathPrefix
+          value: /
 persistence:
   data:
-    accessMode: ReadWriteMany
     type: persistentVolumeClaim
-    storageClass: nfs-client
-    enabled: true
     size: 2Gi
+    accessMode: ReadWriteMany
+    enabled: true
+    storageClass: nfs-client
 
