@@ -1,6 +1,5 @@
 ---
 # Source: audit/templates/common.yaml
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -27,6 +26,9 @@ data:
   Telemetry__Metrics__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
   Telemetry__ServiceName: Audit.Production
   Telemetry__Trace__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
+
+
+
 ---
 # Source: audit/templates/common.yaml
 apiVersion: v1
@@ -52,6 +54,12 @@ spec:
     app.kubernetes.io/controller: audit-api
     app.kubernetes.io/instance: audit-app
     app.kubernetes.io/name: audit-app
+
+
+
+
+  
+
 ---
 # Source: audit/templates/common.yaml
 apiVersion: apps/v1
@@ -122,6 +130,7 @@ spec:
           resources:
             requests:
               cpu: 5m
+
 ---
 # Source: audit/templates/common.yaml
 apiVersion: apps/v1
@@ -192,6 +201,10 @@ spec:
           resources:
             requests:
               cpu: 5m
+
+
+  
+
 ---
 # Source: audit/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -225,3 +238,8 @@ spec:
         - path:
             type: PathPrefix
             value: /
+
+
+
+
+

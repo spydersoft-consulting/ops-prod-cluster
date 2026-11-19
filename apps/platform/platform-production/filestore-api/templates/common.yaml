@@ -1,6 +1,5 @@
 ---
 # Source: filestore-api/templates/common.yaml
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -25,6 +24,9 @@ data:
   Telemetry__Metrics__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
   Telemetry__ServiceName: FileStore.Production
   Telemetry__Trace__Otlp__Endpoint: http://production-grafana-alloy.grafana:4317
+
+
+
 ---
 # Source: filestore-api/templates/common.yaml
 apiVersion: v1
@@ -50,6 +52,12 @@ spec:
     app.kubernetes.io/controller: filestore-api
     app.kubernetes.io/instance: filestore-app
     app.kubernetes.io/name: filestore-app
+
+
+
+
+  
+
 ---
 # Source: filestore-api/templates/common.yaml
 apiVersion: apps/v1
@@ -120,6 +128,10 @@ spec:
           resources:
             requests:
               cpu: 5m
+
+
+  
+
 ---
 # Source: filestore-api/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -153,3 +165,8 @@ spec:
         - path:
             type: PathPrefix
             value: /
+
+
+
+
+
